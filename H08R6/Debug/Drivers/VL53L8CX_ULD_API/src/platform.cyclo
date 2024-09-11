@@ -1,7 +1,7 @@
 ../Drivers/VL53L8CX_ULD_API/src/platform.c:23:9:VL53L8CX_RdByte	1
 ../Drivers/VL53L8CX_ULD_API/src/platform.c:31:9:VL53L8CX_WrByte	1
 ../Drivers/VL53L8CX_ULD_API/src/platform.c:39:9:VL53L8CX_WrMulti	5
-../Drivers/VL53L8CX_ULD_API/src/platform.c:89:9:VL53L8CX_RdMulti	4
-../Drivers/VL53L8CX_ULD_API/src/platform.c:135:9:VL53L8CX_Reset_Sensor	1
-../Drivers/VL53L8CX_ULD_API/src/platform.c:153:6:VL53L8CX_SwapBuffer	2
-../Drivers/VL53L8CX_ULD_API/src/platform.c:172:9:VL53L8CX_WaitMs	1
+../Drivers/VL53L8CX_ULD_API/src/platform.c:93:9:VL53L8CX_RdMulti	4
+../Drivers/VL53L8CX_ULD_API/src/platform.c:144:9:VL53L8CX_Reset_Sensor	1
+../Drivers/VL53L8CX_ULD_API/src/platform.c:176:6:VL53L8CX_SwapBuffer	2
+../Drivers/VL53L8CX_ULD_API/src/platform.c:195:9:VL53L8CX_WaitMs	1

@@ -11,14 +11,14 @@
   */
 
 #include "platform.h"
-#include "main.h"
+#include "Porting.h"
 
 /* Macros defined for SPI communication */
 #define VL53L8CX_COMMS_CHUNK_SIZE 4096
 #define SPI_WRITE_MASK(x) (uint16_t)(x | 0x8000)  // 1
 #define SPI_READ_MASK(x)  (uint16_t)(x & ~0x8000) // 0
 
-extern SPI_HandleTypeDef hspi2;
+//extern SPI_HandleTypeDef hspi2;
 
 uint8_t VL53L8CX_RdByte(
 		VL53L8CX_Platform *p_platform,
@@ -78,9 +78,13 @@ uint8_t VL53L8CX_WrMulti(
 
 		data_size += 2;
 
-		HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
-		status |= HAL_SPI_Transmit(&hspi2, data_write, data_size, 100*data_size);
-		HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_SET);
+		ResetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
+
+		//HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
+		status |=  SendSPI(&hspi2, data_write, data_size);
+	//	status |=  HAL_SPI_Transmit(&hspi2, data_write, data_size, 100*data_size);
+		SetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
+		//HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_SET);
 	}
 
 	return status;
@@ -123,10 +127,15 @@ uint8_t VL53L8CX_RdMulti(
 
 
 
-		HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
-		status |= HAL_SPI_Transmit(&hspi2, data_write, 2, 0x1000);
-		status |= HAL_SPI_Receive(&hspi2, p_values + position, data_size, 100*data_size);
-		HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_SET);
+		// HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
+		ResetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
+		status |= SendSPI(&hspi2, data_write, 2);
+		// HAL_SPI_Transmit(&hspi2, data_write, 2, 0x1000);
+		status |= ReceiveSPI(&hspi2,  p_values + position, data_size);
+		// status |= HAL_SPI_Receive(&hspi2, p_values + position, data_size, 100*data_size);
+
+		// HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_SET);
+		SetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
 	}
 
 	return status;
@@ -134,18 +143,32 @@ uint8_t VL53L8CX_RdMulti(
 
 uint8_t VL53L8CX_Reset_Sensor(VL53L8CX_Platform *p_platform)
 {
-	HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
+	ResetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
+	// HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
 
 	/* Toggle EVK PWR EN board and Lpn pins */
-	HAL_GPIO_WritePin(LPn_GPIO_Port, LPn_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(AVDD_EN_GPIO_Port, AVDD_EN_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin, GPIO_PIN_RESET);
-	HAL_Delay(100);
+	ResetGPIOsPin(LPn_GPIO_Port, LPn_Pin);
+	ResetGPIOsPin(AVDD_EN_GPIO_Port, AVDD_EN_Pin);
+	ResetGPIOsPin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin);
 
-	HAL_GPIO_WritePin(LPn_GPIO_Port, LPn_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(AVDD_EN_GPIO_Port, AVDD_EN_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin, GPIO_PIN_SET);
-	HAL_Delay(100);
+	//HAL_GPIO_WritePin(LPn_GPIO_Port, LPn_Pin, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(AVDD_EN_GPIO_Port, AVDD_EN_Pin, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin, GPIO_PIN_RESET);
+
+	_DELAY_MS(100);
+	// delay(100);
+	//HAL_Delay(100);
+
+	SetGPIOsPin(LPn_GPIO_Port, LPn_Pin);
+	SetGPIOsPin(AVDD_EN_GPIO_Port, AVDD_EN_Pin);
+	SetGPIOsPin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin);
+	//HAL_GPIO_WritePin(LPn_GPIO_Port, LPn_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(AVDD_EN_GPIO_Port, AVDD_EN_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin, GPIO_PIN_SET);
+	_DELAY_MS(100);
+	// delay(100);
+
+	//HAL_Delay(100);
   
 	return 0;
 }
@@ -173,6 +196,9 @@ uint8_t VL53L8CX_WaitMs(
 		VL53L8CX_Platform *p_platform,
                uint32_t TimeMs)
 {
-	HAL_Delay(TimeMs);
+	_DELAY_MS(100);
+	// delay(100);
+	//HAL_Delay(TimeMs);
+
 	return 0;
 }

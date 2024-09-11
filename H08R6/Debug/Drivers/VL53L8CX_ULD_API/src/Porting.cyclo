@@ -1,0 +1,5 @@
+../Drivers/VL53L8CX_ULD_API/src/Porting.c:36:6:delay	1
+../Drivers/VL53L8CX_ULD_API/src/Porting.c:48:16:SetGPIOsPin	2
+../Drivers/VL53L8CX_ULD_API/src/Porting.c:66:16:ResetGPIOsPin	2
+../Drivers/VL53L8CX_ULD_API/src/Porting.c:89:16:SendSPI	4
+../Drivers/VL53L8CX_ULD_API/src/Porting.c:111:16:ReceiveSPI	4

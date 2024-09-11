@@ -26,7 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "vl53l8cx_api.h"
+#include "VL53L8CX_APIs.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,19 +47,19 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int status;
+/*int status;
 volatile int IntCount;
 uint8_t p_data_ready;
 VL53L8CX_Configuration 	Dev;
 VL53L8CX_ResultsData 	Results;
 uint8_t resolution, isAlive;
-uint16_t idx;
+uint16_t idx;*/
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void get_data_by_polling(VL53L8CX_Configuration *p_dev);
+//void get_data_by_polling(VL53L8CX_Configuration *p_dev);
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 
 PUTCHAR_PROTOTYPE
@@ -112,7 +112,11 @@ int main(void)
   MX_USART5_UART_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-  VL53L8CX_Reset_Sensor(&(Dev.platform));
+
+  VL53L8CX_Init();
+  VL53L8CX_SetResolution();
+  VL53L8CX_SampleRanging();
+  /*VL53L8CX_Reset_Sensor(&(Dev.platform));
   status = vl53l8cx_is_alive(&Dev, &isAlive);
   if(!isAlive)
 	{
@@ -132,7 +136,7 @@ int main(void)
 
 	printf("Ranging starts\n");
 	status = vl53l8cx_start_ranging(&Dev);
-	get_data_by_polling(&Dev);
+	get_data_by_polling(&Dev);*/
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -188,8 +192,8 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void get_data_by_polling(VL53L8CX_Configuration *p_dev){
-	do
+//void get_data_by_polling(VL53L8CX_Configuration *p_dev){
+	/*do
 	{
 		status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
 
@@ -198,13 +202,13 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
 			status = vl53l8cx_get_ranging_data(p_dev, &Results);
 
 			for(int i = 0; i < resolution;i++){
-				/* Print per zone results */
+			//	 Print per zone results
 				printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
 						i,
 						Results.nb_target_detected[i],
 						Results.ambient_per_spad[i]);
 
-				/* Print per target results */
+			//	 Print per target results
 				if(Results.nb_target_detected[i] > 0){
 					printf("Target status : %3u, Distance : %4d mm\n",
 							Results.target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
@@ -219,7 +223,8 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
 		}
 	}
 	while(1);
-}
+	*/
+//}
 
 /* USER CODE END 4 */
 

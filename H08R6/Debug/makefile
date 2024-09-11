@@ -61,8 +61,8 @@ all: main-build
 main-build: H08R6.elf secondary-outputs
 
 # Tool invocations
-H08R6.elf H08R6.map: $(OBJS) $(USER_OBJS) C:\Users\Control\Documents\STM_dir\H08R6\STM32G0B1CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "H08R6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\Control\Documents\STM_dir\H08R6\STM32G0B1CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="H08R6.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+H08R6.elf H08R6.map: $(OBJS) $(USER_OBJS) C:\Users\Control\Documents\H08R6x-Firmware\H08R6\STM32G0B1CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "H08R6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\Control\Documents\H08R6x-Firmware\H08R6\STM32G0B1CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="H08R6.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
