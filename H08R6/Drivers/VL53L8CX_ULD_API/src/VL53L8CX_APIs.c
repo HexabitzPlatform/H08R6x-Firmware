@@ -20,7 +20,7 @@ int status;
 volatile int IntCount;
 uint8_t p_data_ready;
 VL53L8CX_Configuration 	Dev;
-VL53L8CX_ResultsData 	Results;
+VL53L8CX_ResultsData Results;
 uint8_t resolution, isAlive;
 uint16_t idx;
 
@@ -68,36 +68,56 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
 /**************************************************************************/
 /* Exported functions  ****************************************************/
 /**************************************************************************/
+
 VL53L8CX_Status VL53L8CX_Init(void){
 
 	VL53L8CX_Reset_Sensor(&(Dev.platform));
 
 	if(vl53l8cx_is_alive(&Dev, &isAlive))
-		return VL53L8CX_ERR;
+		return VL53L8CX_ERR_INIT;
 	if(!isAlive)
-		return VL53L8CX_ERR;
+		return VL53L8CX_ERR_INIT;
 	if(vl53l8cx_init(&Dev))
-		return VL53L8CX_ERR;
+		return VL53L8CX_ERR_INIT;
 
 	return VL53L8CX_OK;
 
 }
 
-VL53L8CX_Status VL53L8CX_SetResolution(void){
+VL53L8CX_Status VL53L8CX_SetResolution(uint8_t res){
 
-	if(vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_8X8))
-		return VL53L8CX_ERR;
-	if(vl53l8cx_set_ranging_frequency_hz(&Dev, 5))				// Set 5Hz ranging frequency
-		return VL53L8CX_ERR;
+	if(vl53l8cx_set_resolution(&Dev, res))
+		return VL53L8CX_ERR_RES;
 	return VL53L8CX_OK;
+}
+
+VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t freq){
+
+	if(vl53l8cx_set_ranging_frequency_hz(&Dev, freq))				// Set 5Hz ranging frequency
+		return VL53L8CX_ERR_Freq;
+	return VL53L8CX_OK;
+}
+
+/*VL53L8CX_Status VL53L8CX_SetTargetsPerZone(uint8_t count){
+	VL53L8CX_NB_TARGET_PER_ZONE = count;
+	return VL53L8CX_OK;
+}*/
+
+VL53L8CX_Status VL53L8CX_SetRangingMode(uint8_t rangMode){
+	vl53l8cx_set_ranging_mode(&Dev, rangMode);
+	return VL53L8CX_OK;
+
+}
+
+VL53L8CX_Status VL53L8CX_SetPowerMode(uint8_t pwrMode){
+	vl53l8cx_set_power_mode(&Dev, pwrMode);
+		return VL53L8CX_OK;
 }
 
 VL53L8CX_Status VL53L8CX_SampleRanging(void){
 
-	if(vl53l8cx_set_ranging_mode(&Dev, VL53L8CX_RANGING_MODE_AUTONOMOUS))  // Set mode autonomous
-		return VL53L8CX_ERR;
 	if(vl53l8cx_start_ranging(&Dev))
-		return VL53L8CX_ERR;
+		return VL53L8CX_ERR_Rang;
 	get_data_by_polling(&Dev);
 	return VL53L8CX_OK;
 }

@@ -41,6 +41,15 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+#define VL53L8CX_APIs_RESOLUTIN_4	((uint8_t) 16U)
+#define VL53L8CX_APIs_RESOLUTIN_8	((uint8_t) 64U)
+#define VL53L8CX_APIs_FREQUANCY		5U
+#define VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS		((uint8_t) 3U)
+#define VL53L8CX_APIs_RANGING_MODE_CONTINUOUS		((uint8_t) 1U)
+#define VL53L8CX_APIs_PWR_MODE_SLEEP		((uint8_t) 0U)
+#define VL53L8CX_APIs_PWR_MODE_WAKEUP		((uint8_t) 1U)
+#define VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP	((uint8_t) 2U)
+
 
 /* USER CODE END PM */
 
@@ -114,29 +123,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   VL53L8CX_Init();
-  VL53L8CX_SetResolution();
+  VL53L8CX_SetResolution(VL53L8CX_APIs_RESOLUTIN_4);
+  VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY);
+  VL53L8CX_SetRangingMode(VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS);
+  VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_WAKEUP);
   VL53L8CX_SampleRanging();
-  /*VL53L8CX_Reset_Sensor(&(Dev.platform));
-  status = vl53l8cx_is_alive(&Dev, &isAlive);
-  if(!isAlive)
-	{
-		printf("VL53L8CX with SPI communication not detected, error : %d\n", status);
-		return 255;
-	}
-	printf("Sensor initializing, please wait few seconds\n");
 
-	status = vl53l8cx_init(&Dev);
-	if(status){
-		printf("Init failed with status %d\n", status);
-	}
-	status = vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_8X8);
-
-	status = vl53l8cx_set_ranging_frequency_hz(&Dev, 5);				// Set 5Hz ranging frequency
-	status = vl53l8cx_set_ranging_mode(&Dev, VL53L8CX_RANGING_MODE_AUTONOMOUS);  // Set mode autonomous
-
-	printf("Ranging starts\n");
-	status = vl53l8cx_start_ranging(&Dev);
-	get_data_by_polling(&Dev);*/
   /* USER CODE END 2 */
 
   /* Infinite loop */
