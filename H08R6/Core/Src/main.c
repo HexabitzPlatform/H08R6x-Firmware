@@ -32,6 +32,12 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+uint8_t sharpener;
+uint8_t DataCalibrate[800];
+VL53L8CX_APIs_ResultsData Data;
+// uint8_t Data[260];
+uint8_t sel = 0;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -49,6 +55,7 @@
 #define VL53L8CX_APIs_PWR_MODE_SLEEP		((uint8_t) 0U)
 #define VL53L8CX_APIs_PWR_MODE_WAKEUP		((uint8_t) 1U)
 #define VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP	((uint8_t) 2U)
+#define VL53L8CX_APIs_SHARPENER	((uint8_t) 6U)   // Default value sharpener is 5%
 
 
 /* USER CODE END PM */
@@ -56,19 +63,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-/*int status;
-volatile int IntCount;
-uint8_t p_data_ready;
-VL53L8CX_Configuration 	Dev;
-VL53L8CX_ResultsData 	Results;
-uint8_t resolution, isAlive;
-uint16_t idx;*/
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-//void get_data_by_polling(VL53L8CX_Configuration *p_dev);
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 
 PUTCHAR_PROTOTYPE
@@ -80,6 +80,7 @@ PUTCHAR_PROTOTYPE
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -123,11 +124,31 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   VL53L8CX_Init();
+
   VL53L8CX_SetResolution(VL53L8CX_APIs_RESOLUTIN_4);
+
   VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY);
+
   VL53L8CX_SetRangingMode(VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS);
+
   VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_WAKEUP);
-  VL53L8CX_SampleRanging();
+
+  VL53L8CX_SetSharpener(VL53L8CX_APIs_SHARPENER);
+
+  VL53L8CX_GetSharpener(&sharpener);
+
+  VL53L8CX_Detection_Threoshlod();
+
+  VL53L8CX_Calibration();
+
+  VL53L8CX_GetCalibrationData(&DataCalibrate);
+
+  VL53L8CX_SetCalibrationData(DataCalibrate);
+
+  VL53L8CX_SampleRanging(sel , &Data);
+
+  VL53L8CX_StopRanging();
+
 
   /* USER CODE END 2 */
 

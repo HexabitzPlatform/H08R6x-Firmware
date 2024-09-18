@@ -45,7 +45,7 @@ typedef struct
  * zone means a lower RAM). The value must be between 1 and 4.
  */
 
-#define 	VL53L8CX_NB_TARGET_PER_ZONE		2U
+#define 	VL53L8CX_NB_TARGET_PER_ZONE		1U
 
 /*
  * @brief The macro below can be used to avoid data conversion into the driver.
