@@ -1,8 +1,8 @@
 /*
- * LSM303AGR_APIs.C
- * Description: LSM6DS3TR-C Accelerometer and magnetometer unit APIs driver header file.
- *  Created on: Jul 24, 2024
- *      Author: Adel Faki @ Hexabitz
+ * VL53L8CX_APIS.C
+ * Description: VL53L8CX TOF sensor APIs driver source file.
+ *  Created on: Sep 6, 2024
+ *      Author: Muhammad Alhaddad @ Hexabitz
  ******************************************************************************
  * @attention
  *
@@ -11,11 +11,13 @@
  *
  ******************************************************************************
  */
-
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "VL53L8CX_APIS.h"
 #include "vl53l8cx_plugin_xtalk.h"
 #include "vl53l8cx_plugin_detection_thresholds.h"
-#include "main.h"
+#include "vl53l8cx_plugin_motion_indicator.h"
 
 /* Exported Type's instance  ---------------------------------------------*/
 int status;
@@ -24,18 +26,14 @@ uint8_t p_data_ready;
 VL53L8CX_Configuration 	Dev;
 VL53L8CX_ResultsData Results;
 uint8_t resolution, isAlive;
+VL53L8CX_Motion_Configuration 	motion_config;
 uint16_t idx;
-/* In this example, we want 2 thresholds per zone for a 4x4 resolution */
-		/* Create array of thresholds (size cannot be changed) */
 VL53L8CX_DetectionThresholds thresholds[VL53L8CX_NB_THRESHOLDS];
+uint8_t					xtalk_data[VL53L8CX_XTALK_BUFFER_SIZE];
+#define is_interrupt 1
 
-#define is_interrupt 1 /*is_interrupt = 1 => get data by interrupt, = 0 => get data by polling */
-
-
-
-void get_data_by_polling(VL53L8CX_Configuration *p_dev);
-void get_data_by_interrupt(VL53L8CX_Configuration *p_dev , uint8_t data_to_transfer, VL53L8CX_APIs_ResultsData* data);
-void get_data_throshold(VL53L8CX_Configuration *p_dev);
+/* Platform Exported Functions ********************************************/
+void delay(uint32_t ms);
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
@@ -46,11 +44,27 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 }
 
 
-/*
- * ************** Local function *************************
- */
+/* Local functions prototypes ********************************************/
+void get_data_by_polling(VL53L8CX_Configuration *p_dev, VL53L8CX_APIs_ResultsData* data);
+void get_data_by_interrupt(VL53L8CX_Configuration *p_dev , VL53L8CX_APIs_ResultsData* data);
+void get_data_throshold(VL53L8CX_Configuration *p_dev, VL53L8CX_APIs_ResultsData* data);
+void get_motion_indicator(VL53L8CX_APIs_ResultsData* data);
 
-void get_data_by_interrupt(VL53L8CX_Configuration *p_dev , uint8_t data_to_transfer, VL53L8CX_APIs_ResultsData* data){
+
+/**************************************************************************/
+/* Platform Exported Functions ********************************************/
+/**************************************************************************/
+
+void delay(uint32_t ms){
+
+	HAL_Delay(ms);
+
+}
+
+/**************************************************************************/
+/* Local Functions  *******************************************************/
+/**************************************************************************/
+void get_data_by_interrupt(VL53L8CX_Configuration *p_dev, VL53L8CX_APIs_ResultsData* data){
 	do
 	{
 		__WFI();	// Wait for interrupt
@@ -75,14 +89,14 @@ void get_data_by_interrupt(VL53L8CX_Configuration *p_dev , uint8_t data_to_trans
 				/* Print per zone results */
 				printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
 						i,
-						Results.nb_target_detected[i],
-						Results.ambient_per_spad[i]);
+						data->nb_target_detected[i],
+						data->ambient_per_spad[i]);
 
 				/* Print per target results */
-				if(Results.nb_target_detected[i] > 0){
+				if(data->nb_target_detected[i] > 0){
 					printf("Target status : %3u, Distance : %4d mm\n",
-							Results.target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
-							Results.distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i]);
+							data->target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
+							data->distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i]);
 				}else{
 					printf("Target status : 255, Distance : No target\n");
 				}
@@ -92,7 +106,9 @@ void get_data_by_interrupt(VL53L8CX_Configuration *p_dev , uint8_t data_to_trans
 	}while(1);
 }
 
-void get_data_by_polling(VL53L8CX_Configuration *p_dev){
+/**********************************************************************/
+
+void get_data_by_polling(VL53L8CX_Configuration *p_dev, VL53L8CX_APIs_ResultsData* data){
 	do
 	{
 		status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
@@ -106,14 +122,14 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
 			//	 Print per zone results
 				printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
 						i,
-						Results.nb_target_detected[i],
-						Results.ambient_per_spad[i]);
+						data->nb_target_detected[i],
+						data->ambient_per_spad[i]);
 
 			//	 Print per target results
-				if(Results.nb_target_detected[i] > 0){
+				if(data->nb_target_detected[i] > 0){
 					printf("Target status : %3u, Distance : %4d mm\n",
-							Results.target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
-							Results.distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i]);
+							data->target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
+							data->distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i]);
 				}else{
 					printf("Target status : 255, Distance : No target\n");
 				}
@@ -121,15 +137,16 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
 			printf("\n");
 			break;
 		}else{
-			HAL_Delay(5);
+			delay(5);
 		}
 	}
 	while(1);
 
 }
 
+/**********************************************************************/
 
-void get_data_throshold(VL53L8CX_Configuration *p_dev){
+void get_data_throshold(VL53L8CX_Configuration *p_dev, VL53L8CX_APIs_ResultsData* data){
 	do
 	{
 		__WFI();	// Wait for interrupt
@@ -137,25 +154,80 @@ void get_data_throshold(VL53L8CX_Configuration *p_dev){
 					IntCount=0;
 
 		  		// Get the sensor's ranging data
+				status = vl53l8cx_get_resolution(p_dev, &resolution);
 		  		status = vl53l8cx_get_ranging_data(p_dev, &Results);
+		  		for(int i = 0; i < resolution;i++)
+				{
+					data->distance_mm[i]=Results.distance_mm[i];
+					data->range_sigma_mm[i]=Results.range_sigma_mm[i];
+					data->reflectance[i]=Results.reflectance[i];
+					data->target_status[i]=Results.target_status[i];
+					data->nb_target_detected[i]=Results.nb_target_detected[i];
+					data->signal_per_spad[i]=Results.signal_per_spad[i];
+					data->ambient_per_spad[i]=Results.ambient_per_spad[i];
+					data->nb_spads_enabled[i]=Results.nb_spads_enabled[i];
+				}
 		  		printf("n");
 		  		// Loop to print data of all 16 regions
-		  		for (int i = 0; i < 16; i++) {
+		  		for (int i = 0; i < resolution; i++) {
 		  			printf("Zone : %3d, Status : %3u, Distance : %4d mm, Signal : %5lu kcps/SPADs\r\n",
-		  							 i,
-									 Results.target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
-									 Results.distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i],
-									 Results.signal_per_spad[VL53L8CX_NB_TARGET_PER_ZONE * i]);
+					 i,
+					 data->target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
+					 data->distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i],
+					 data->signal_per_spad[VL53L8CX_NB_TARGET_PER_ZONE * i]);
 		  		}
 		  	}
 	}
 	while(1);
 
 }
+
+/**********************************************************************/
+
+void get_motion_indicator(VL53L8CX_APIs_ResultsData* data){
+	do{
+		status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
+
+		if(p_data_ready)
+		{
+			vl53l8cx_get_resolution(&Dev, &resolution);
+			vl53l8cx_get_ranging_data(&Dev, &Results);
+
+			for(int i = 0; i < resolution;i++)
+			{
+				data->distance_mm[i]=Results.distance_mm[i];
+				data->range_sigma_mm[i]=Results.range_sigma_mm[i];
+				data->reflectance[i]=Results.reflectance[i];
+				data->target_status[i]=Results.target_status[i];
+				data->nb_target_detected[i]=Results.nb_target_detected[i];
+				data->signal_per_spad[i]=Results.signal_per_spad[i];
+				data->ambient_per_spad[i]=Results.ambient_per_spad[i];
+				data->nb_spads_enabled[i]=Results.nb_spads_enabled[i];
+				data->motion_indicator.motion[motion_config.map_id[i]] = Results.motion_indicator.motion[motion_config.map_id[i]];
+			}
+
+			/* As the sensor is set in 4x4 mode by default, we have a total
+			 * of 16 zones to print. For this example, only the data of first zone are
+			 * print */
+			printf("Print data no : %3u\n", Dev.streamcount);
+			for(int i = 0; i < 16; i++)
+			{
+				printf("Zone : %3d, Motion power : %3lu\n",
+					i,
+					data->motion_indicator.motion[motion_config.map_id[i]]);
+			}
+			printf("\n");
+		}
+
+		/* Wait a few ms to avoid too high polling (function in platform
+		 * file, not in API) */
+		delay(5);
+	}while(1);
+}
+
 /**************************************************************************/
 /* Exported functions  ****************************************************/
 /**************************************************************************/
-
 VL53L8CX_Status VL53L8CX_Init(void){
 
 	VL53L8CX_Reset_Sensor(&(Dev.platform));
@@ -171,6 +243,8 @@ VL53L8CX_Status VL53L8CX_Init(void){
 
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_SetResolution(uint8_t res){
 
 	if(vl53l8cx_set_resolution(&Dev, res))
@@ -178,17 +252,16 @@ VL53L8CX_Status VL53L8CX_SetResolution(uint8_t res){
 	return VL53L8CX_OK;
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t freq){
 
-	if(vl53l8cx_set_ranging_frequency_hz(&Dev, freq))				// Set 5Hz ranging frequency
+	if(vl53l8cx_set_ranging_frequency_hz(&Dev, freq))	// Set 5Hz ranging frequency
 		return VL53L8CX_ERR_Freq;
 	return VL53L8CX_OK;
 }
 
-/*VL53L8CX_Status VL53L8CX_SetTargetsPerZone(uint8_t count){
-	VL53L8CX_NB_TARGET_PER_ZONE = count;
-	return VL53L8CX_OK;
-}*/
+/**********************************************************************/
 
 VL53L8CX_Status VL53L8CX_SetRangingMode(uint8_t rangMode){
 	vl53l8cx_set_ranging_mode(&Dev, rangMode);
@@ -196,28 +269,48 @@ VL53L8CX_Status VL53L8CX_SetRangingMode(uint8_t rangMode){
 
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_SetPowerMode(uint8_t pwrMode){
 	vl53l8cx_set_power_mode(&Dev, pwrMode);
 		return VL53L8CX_OK;
 }
 
-VL53L8CX_Status VL53L8CX_SampleRanging(uint8_t data_to_transfer, VL53L8CX_APIs_ResultsData* data){
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_SampleRanging(VL53L8CX_APIs_ResultsData* data){
 
 	if(vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
 	if (is_interrupt) {
-		get_data_by_interrupt(&Dev, data_to_transfer, data);
+		get_data_by_interrupt(&Dev, data);
 	}
 	else {
-		get_data_by_polling(&Dev);
+		get_data_by_polling(&Dev, data);
 	}
 	return VL53L8CX_OK;
 }
 
-VL53L8CX_Status VL53L8CX_Detection_Thresholds(void)
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_GetIntegrationTime(uint32_t* integration_time_ms){
+	if(vl53l8cx_get_integration_time_ms(&Dev, integration_time_ms))
+		return VL53L8CX_ERR_INTEG_TIME;
+	return VL53L8CX_OK;
+}
+
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_SetIntegrationTime(uint32_t integration_time_ms){
+	if(vl53l8cx_set_integration_time_ms(&Dev, integration_time_ms))
+		return VL53L8CX_ERR_INTEG_TIME;
+	return VL53L8CX_OK;
+}
+
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_Detection_Thresholds(VL53L8CX_APIs_ResultsData* data)
 {
-
-
 		/* Set all values to 0 */
 		memset(&thresholds, 0, sizeof(thresholds));
 
@@ -266,10 +359,12 @@ VL53L8CX_Status VL53L8CX_Detection_Thresholds(void)
 			printf("Put an object between 200mm and 400mm to catch an interrupt\n");
 
 
-			get_data_throshold(&Dev);
+			get_data_throshold(&Dev, data);
 
 			return VL53L8CX_OK;
 }
+
+/**********************************************************************/
 
 VL53L8CX_Status VL53L8CX_StopRanging(void){
 	if(vl53l8cx_stop_ranging(&Dev))
@@ -277,33 +372,127 @@ VL53L8CX_Status VL53L8CX_StopRanging(void){
 	return VL53L8CX_OK;
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_SetSharpener(uint8_t sharpener){
 	if(vl53l8cx_set_sharpener_percent(&Dev, sharpener))
 		return VL53L8CX_ERR_SHARPENER;
 	return VL53L8CX_OK;
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_GetSharpener(uint8_t* sharpener){
 	vl53l8cx_get_sharpener_percent(&Dev, sharpener);
 	return VL53L8CX_OK;
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_Calibration(){
-	if(vl53l8cx_calibrate_xtalk(&Dev, 3, 2, 620))
+	if(vl53l8cx_calibrate_xtalk(&Dev, 3, 4, 600))
 		return VL53L8CX_ERR_CALIBRATE;
 	return VL53L8CX_OK;
 }
+
+/**********************************************************************/
 
 VL53L8CX_Status VL53L8CX_GetCalibrationData(uint8_t* pDataCalibrate){
-	if(vl53l8cx_get_caldata_xtalk(&Dev, pDataCalibrate))
+	if(vl53l8cx_get_caldata_xtalk(&Dev, xtalk_data))
 		return VL53L8CX_ERR_CALIBRATE;
 	return VL53L8CX_OK;
 }
 
+/**********************************************************************/
+
 VL53L8CX_Status VL53L8CX_SetCalibrationData(uint8_t* pDataCalibrate){
-	if(vl53l8cx_get_caldata_xtalk(&Dev, pDataCalibrate))
+	if(vl53l8cx_get_caldata_xtalk(&Dev, xtalk_data))
 			return VL53L8CX_ERR_CALIBRATE;
 	return VL53L8CX_OK;
 }
 
+/**********************************************************************/
 
+VL53L8CX_Status VL53L8CX_VisualizeXtalk(void){
+	uint32_t i, j;
+	union Block_header *bh_ptr;
+	uint32_t xtalk_signal_kcps_grid[VL53L8CX_RESOLUTION_8X8];
+	uint16_t xtalk_shape_bins[144];
+
+	/* Swap buffer */
+	VL53L8CX_SwapBuffer(xtalk_data, VL53L8CX_XTALK_BUFFER_SIZE);
+
+	/* Get data */
+	for(i = 0; i < VL53L8CX_XTALK_BUFFER_SIZE; i = i + 4)
+	{
+		bh_ptr = (union Block_header *)&(xtalk_data[i]);
+		if (bh_ptr->idx == 0xA128){
+			printf("Xtalk shape bins located at position %#06x\n", (int)i);
+			for (j = 0; j < 144; j++){
+				memcpy(&(xtalk_shape_bins[j]), &(xtalk_data[i + 4 + j * 2]), 2);
+				printf("xtalk_shape_bins[%d] = %d\n", (int)j, (int)xtalk_shape_bins[j]);
+			}
+		}
+		if (bh_ptr->idx == 0x9FFC){
+			printf("Xtalk signal kcps located at position %#06x\n", (int)i);
+			for (j = 0; j < VL53L8CX_RESOLUTION_8X8; j++){
+				memcpy(&(xtalk_signal_kcps_grid[j]), &(xtalk_data[i + 4 + j * 4]), 4);
+				xtalk_signal_kcps_grid[j] /= 2048;
+				printf("xtalk_signal_kcps_grid[%d] = %d\n", (int)j, (int)xtalk_signal_kcps_grid[j]);
+			}
+		}
+	}
+	return VL53L8CX_OK;
+}
+
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_ResultsData* data){
+	/* Create motion indicator with resolution 4x4 */
+	status = vl53l8cx_motion_indicator_init(&Dev, &motion_config, VL53L8CX_RESOLUTION_4X4);
+	if(status)
+	{
+		printf("Motion indicator init failed with status : %u\n", status);
+		return status;
+	}
+
+	/* (Optional) Change the min and max distance used to detect motions. The
+	 * difference between min and max must never be >1500mm, and minimum never be <400mm,
+	 * otherwise the function below returns error 127 */
+	status = vl53l8cx_motion_indicator_set_distance_motion(&Dev, &motion_config, 1000, 2000);
+	if(status)
+	{
+		printf("Motion indicator set distance motion failed with status : %u\n", status);
+		return status;
+	}
+
+	/* If user want to change the resolution, he also needs to update the motion indicator resolution */
+	//status = vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_4X4);
+	//status = vl53l8cx_motion_indicator_set_resolution(&Dev, &motion_config, VL53L8CX_RESOLUTION_4X4);
+
+	/* Increase ranging frequency for the example */
+	status = vl53l8cx_set_ranging_frequency_hz(&Dev, 2);
+
+	status = vl53l8cx_start_ranging(&Dev);
+
+	get_motion_indicator(data);
+
+	return VL53L8CX_OK;
+
+}
+
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* data){
+	vl53l8cx_set_external_sync_pin_enable(&Dev, 1);
+	if(vl53l8cx_start_ranging(&Dev))
+			return VL53L8CX_ERR_Rang;
+	if (is_interrupt) {
+		get_data_by_interrupt(&Dev, data);
+	}
+	else {
+		get_data_by_polling(&Dev, data);
+	}
+
+	return VL53L8CX_OK;
+}

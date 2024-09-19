@@ -72,7 +72,6 @@ typedef SPI_HandleTypeDef SPI_HANDLE;
 /* Exported functions prototypes ---------------------------------------------*/
 /* USER CODE BEGIN EFP */
 
-void delay(uint32_t ms);
 /* Peripherals Drivers Functions */
 
 /* GPIOs functions */

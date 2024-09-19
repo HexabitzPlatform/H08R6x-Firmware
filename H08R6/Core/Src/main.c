@@ -33,10 +33,9 @@
 /* USER CODE BEGIN PTD */
 
 uint8_t sharpener;
+uint32_t integration_time_ms;
 uint8_t DataCalibrate[800];
 VL53L8CX_APIs_ResultsData Data;
-// uint8_t Data[260];
-uint8_t sel = 0;
 
 /* USER CODE END PTD */
 
@@ -133,19 +132,31 @@ int main(void)
 
   VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_WAKEUP);
 
+  VL53L8CX_GetIntegrationTime(&integration_time_ms);
+
+  VL53L8CX_SetIntegrationTime(integration_time_ms);
+
   VL53L8CX_SetSharpener(VL53L8CX_APIs_SHARPENER);
 
   VL53L8CX_GetSharpener(&sharpener);
 
-  VL53L8CX_Detection_Threoshlod();
+  VL53L8CX_Detection_Thresholds(&Data);
+
+  VL53L8CX_SampleRanging(&Data);
+
+  VL53L8CX_SYNCRanging(&Data);
 
   VL53L8CX_Calibration();
 
   VL53L8CX_GetCalibrationData(&DataCalibrate);
 
+  VL53L8CX_VisualizeXtalk();
+
+  VL53L8CX_MotionIndicator(&Data);
+
   VL53L8CX_SetCalibrationData(DataCalibrate);
 
-  VL53L8CX_SampleRanging(sel , &Data);
+  VL53L8CX_SampleRanging(&Data);
 
   VL53L8CX_StopRanging();
 
@@ -204,40 +215,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-//void get_data_by_polling(VL53L8CX_Configuration *p_dev){
-	/*do
-	{
-		status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
-
-		if(p_data_ready){
-			status = vl53l8cx_get_resolution(p_dev, &resolution);
-			status = vl53l8cx_get_ranging_data(p_dev, &Results);
-
-			for(int i = 0; i < resolution;i++){
-			//	 Print per zone results
-				printf("Zone : %2d, Nb targets : %2u, Ambient : %4lu Kcps/spads, ",
-						i,
-						Results.nb_target_detected[i],
-						Results.ambient_per_spad[i]);
-
-			//	 Print per target results
-				if(Results.nb_target_detected[i] > 0){
-					printf("Target status : %3u, Distance : %4d mm\n",
-							Results.target_status[VL53L8CX_NB_TARGET_PER_ZONE * i],
-							Results.distance_mm[VL53L8CX_NB_TARGET_PER_ZONE * i]);
-				}else{
-					printf("Target status : 255, Distance : No target\n");
-				}
-			}
-			printf("\n");
-		}else{
-			HAL_Delay(5);
-		}
-	}
-	while(1);
-	*/
-//}
 
 /* USER CODE END 4 */
 
