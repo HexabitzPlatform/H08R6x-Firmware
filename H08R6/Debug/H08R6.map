@@ -125,6 +125,110 @@ Discarded input sections
  .ARM.exidx     0x00000000       0x10 C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/crt0.o
  .ARM.attributes
                 0x00000000       0x1b C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/crt0.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .group         0x00000000        0xc ./Core/Src/Module.o
+ .text          0x00000000        0x0 ./Core/Src/Module.o
+ .data          0x00000000        0x0 ./Core/Src/Module.o
+ .bss           0x00000000        0x0 ./Core/Src/Module.o
+ .rodata.CHANNEL_OFFSET_TAB
+                0x00000000        0x7 ./Core/Src/Module.o
+ .text.ModuleInit
+                0x00000000        0xc ./Core/Src/Module.o
+ .debug_info    0x00000000      0x129 ./Core/Src/Module.o
+ .debug_abbrev  0x00000000       0x9c ./Core/Src/Module.o
+ .debug_aranges
+                0x00000000       0x20 ./Core/Src/Module.o
+ .debug_rnglists
+                0x00000000       0x13 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x1f9 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0xa8a ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x12a ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x2e ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x28 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x22 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x8e ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x51 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x103 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x6a ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x1df ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x1c ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x22 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0xd1 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x4da ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x11f ./Core/Src/Module.o
+ .debug_macro   0x00000000     0xf3de ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x66 ./Core/Src/Module.o
+ .debug_macro   0x00000000     0x350e ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x189 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x5c ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x72c ./Core/Src/Module.o
+ .debug_macro   0x00000000     0x1579 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x535 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x1cf ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x25b ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x4f5 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x280 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x417 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x1b2 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x43 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x1f1 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x1e4 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x3fa ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x28 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x123 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x145 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x30b ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x2fe ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x693 ./Core/Src/Module.o
+ .debug_macro   0x00000000       0xa6 ./Core/Src/Module.o
+ .debug_macro   0x00000000      0x5df ./Core/Src/Module.o
+ .debug_macro   0x00000000       0x6a ./Core/Src/Module.o
+ .debug_line    0x00000000      0x791 ./Core/Src/Module.o
+ .debug_str     0x00000000    0xac36b ./Core/Src/Module.o
+ .comment       0x00000000       0x44 ./Core/Src/Module.o
+ .debug_frame   0x00000000       0x2c ./Core/Src/Module.o
+ .ARM.attributes
+                0x00000000       0x2c ./Core/Src/Module.o
  .group         0x00000000        0xc ./Core/Src/dma.o
  .group         0x00000000        0xc ./Core/Src/dma.o
  .group         0x00000000        0xc ./Core/Src/dma.o
@@ -172,6 +276,48 @@ Discarded input sections
  .bss           0x00000000        0x0 ./Core/Src/dma.o
  .rodata.CHANNEL_OFFSET_TAB
                 0x00000000        0x7 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0xa8a ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x12a ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x2e ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x28 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x22 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x8e ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x51 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x103 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x6a ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x1df ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x1c ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x22 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0xd1 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x4da ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x11f ./Core/Src/dma.o
+ .debug_macro   0x00000000     0xf3de ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x66 ./Core/Src/dma.o
+ .debug_macro   0x00000000     0x350e ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x189 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x5c ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x72c ./Core/Src/dma.o
+ .debug_macro   0x00000000     0x1579 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x535 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x1cf ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x25b ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x4f5 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x280 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x417 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x1b2 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x43 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x1f1 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x1e4 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x3fa ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x28 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x123 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x145 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x30b ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x2fe ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x693 ./Core/Src/dma.o
+ .debug_macro   0x00000000       0xa6 ./Core/Src/dma.o
+ .debug_macro   0x00000000      0x5df ./Core/Src/dma.o
+ .debug_macro   0x00000000       0x6a ./Core/Src/dma.o
  .group         0x00000000        0xc ./Core/Src/gpio.o
  .group         0x00000000        0xc ./Core/Src/gpio.o
  .group         0x00000000        0xc ./Core/Src/gpio.o
@@ -4393,6 +4539,7 @@ Linker script and memory map
 LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/thumb/v6-m/nofp/crti.o
 LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/thumb/v6-m/nofp/crtbegin.o
 LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/crt0.o
+LOAD ./Core/Src/Module.o
 LOAD ./Core/Src/dma.o
 LOAD ./Core/Src/gpio.o
 LOAD ./Core/Src/main.o
@@ -5741,138 +5888,96 @@ LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_rnglists
                 0x00000bf9       0x3b ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_xtalk.o
 
-.debug_macro    0x00000000    0x1edfc
+.debug_macro    0x00000000     0x59f7
  .debug_macro   0x00000000      0x1f9 ./Core/Src/dma.o
- .debug_macro   0x000001f9      0xa8a ./Core/Src/dma.o
- .debug_macro   0x00000c83      0x12a ./Core/Src/dma.o
- .debug_macro   0x00000dad       0x2e ./Core/Src/dma.o
- .debug_macro   0x00000ddb       0x28 ./Core/Src/dma.o
- .debug_macro   0x00000e03       0x22 ./Core/Src/dma.o
- .debug_macro   0x00000e25       0x8e ./Core/Src/dma.o
- .debug_macro   0x00000eb3       0x51 ./Core/Src/dma.o
- .debug_macro   0x00000f04      0x103 ./Core/Src/dma.o
- .debug_macro   0x00001007       0x6a ./Core/Src/dma.o
- .debug_macro   0x00001071      0x1df ./Core/Src/dma.o
- .debug_macro   0x00001250       0x1c ./Core/Src/dma.o
- .debug_macro   0x0000126c       0x22 ./Core/Src/dma.o
- .debug_macro   0x0000128e       0xd1 ./Core/Src/dma.o
- .debug_macro   0x0000135f      0x4da ./Core/Src/dma.o
- .debug_macro   0x00001839      0x11f ./Core/Src/dma.o
- .debug_macro   0x00001958     0xf3de ./Core/Src/dma.o
- .debug_macro   0x00010d36       0x66 ./Core/Src/dma.o
- .debug_macro   0x00010d9c     0x350e ./Core/Src/dma.o
- .debug_macro   0x000142aa      0x189 ./Core/Src/dma.o
- .debug_macro   0x00014433       0x5c ./Core/Src/dma.o
- .debug_macro   0x0001448f      0x72c ./Core/Src/dma.o
- .debug_macro   0x00014bbb     0x1579 ./Core/Src/dma.o
- .debug_macro   0x00016134      0x535 ./Core/Src/dma.o
- .debug_macro   0x00016669      0x1cf ./Core/Src/dma.o
- .debug_macro   0x00016838      0x25b ./Core/Src/dma.o
- .debug_macro   0x00016a93      0x4f5 ./Core/Src/dma.o
- .debug_macro   0x00016f88      0x280 ./Core/Src/dma.o
- .debug_macro   0x00017208      0x417 ./Core/Src/dma.o
- .debug_macro   0x0001761f      0x1b2 ./Core/Src/dma.o
- .debug_macro   0x000177d1       0x43 ./Core/Src/dma.o
- .debug_macro   0x00017814      0x1f1 ./Core/Src/dma.o
- .debug_macro   0x00017a05      0x1e4 ./Core/Src/dma.o
- .debug_macro   0x00017be9      0x3fa ./Core/Src/dma.o
- .debug_macro   0x00017fe3       0x28 ./Core/Src/dma.o
- .debug_macro   0x0001800b      0x123 ./Core/Src/dma.o
- .debug_macro   0x0001812e      0x145 ./Core/Src/dma.o
- .debug_macro   0x00018273      0x30b ./Core/Src/dma.o
- .debug_macro   0x0001857e      0x2fe ./Core/Src/dma.o
- .debug_macro   0x0001887c      0x693 ./Core/Src/dma.o
- .debug_macro   0x00018f0f       0xa6 ./Core/Src/dma.o
- .debug_macro   0x00018fb5      0x5df ./Core/Src/dma.o
- .debug_macro   0x00019594       0x6a ./Core/Src/dma.o
- .debug_macro   0x000195fe      0x1f9 ./Core/Src/gpio.o
- .debug_macro   0x000197f7      0x388 ./Core/Src/main.o
- .debug_macro   0x00019b7f       0x61 ./Core/Src/main.o
- .debug_macro   0x00019be0       0x24 ./Core/Src/main.o
- .debug_macro   0x00019c04       0x43 ./Core/Src/main.o
- .debug_macro   0x00019c47       0x34 ./Core/Src/main.o
- .debug_macro   0x00019c7b       0x16 ./Core/Src/main.o
- .debug_macro   0x00019c91       0x35 ./Core/Src/main.o
- .debug_macro   0x00019cc6      0x369 ./Core/Src/main.o
- .debug_macro   0x0001a02f       0x10 ./Core/Src/main.o
- .debug_macro   0x0001a03f       0x16 ./Core/Src/main.o
- .debug_macro   0x0001a055       0x43 ./Core/Src/main.o
- .debug_macro   0x0001a098       0x34 ./Core/Src/main.o
- .debug_macro   0x0001a0cc       0x10 ./Core/Src/main.o
- .debug_macro   0x0001a0dc       0x58 ./Core/Src/main.o
- .debug_macro   0x0001a134       0x8e ./Core/Src/main.o
- .debug_macro   0x0001a1c2       0x1c ./Core/Src/main.o
- .debug_macro   0x0001a1de      0x177 ./Core/Src/main.o
- .debug_macro   0x0001a355       0x16 ./Core/Src/main.o
- .debug_macro   0x0001a36b       0x16 ./Core/Src/main.o
- .debug_macro   0x0001a381      0x146 ./Core/Src/main.o
- .debug_macro   0x0001a4c7       0x16 ./Core/Src/main.o
- .debug_macro   0x0001a4dd       0x20 ./Core/Src/main.o
- .debug_macro   0x0001a4fd      0x1f5 ./Core/Src/main.o
- .debug_macro   0x0001a6f2      0x1f9 ./Core/Src/spi.o
- .debug_macro   0x0001a8eb      0x1ef ./Core/Src/stm32g0xx_hal_msp.o
- .debug_macro   0x0001aada      0x1f9 ./Core/Src/stm32g0xx_it.o
- .debug_macro   0x0001acd3      0x274 ./Core/Src/syscalls.o
- .debug_macro   0x0001af47       0x5b ./Core/Src/syscalls.o
- .debug_macro   0x0001afa2       0x94 ./Core/Src/syscalls.o
- .debug_macro   0x0001b036       0x57 ./Core/Src/syscalls.o
- .debug_macro   0x0001b08d       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b09d       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b0ad       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b0bd       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b0cd       0x1c ./Core/Src/syscalls.o
- .debug_macro   0x0001b0e9       0x52 ./Core/Src/syscalls.o
- .debug_macro   0x0001b13b       0x22 ./Core/Src/syscalls.o
- .debug_macro   0x0001b15d       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b16d       0x52 ./Core/Src/syscalls.o
- .debug_macro   0x0001b1bf       0xcf ./Core/Src/syscalls.o
- .debug_macro   0x0001b28e       0x1c ./Core/Src/syscalls.o
- .debug_macro   0x0001b2aa       0x3d ./Core/Src/syscalls.o
- .debug_macro   0x0001b2e7       0x35 ./Core/Src/syscalls.o
- .debug_macro   0x0001b31c      0x12c ./Core/Src/syscalls.o
- .debug_macro   0x0001b448       0x16 ./Core/Src/syscalls.o
- .debug_macro   0x0001b45e       0x16 ./Core/Src/syscalls.o
- .debug_macro   0x0001b474       0x29 ./Core/Src/syscalls.o
- .debug_macro   0x0001b49d       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b4ad      0x242 ./Core/Src/syscalls.o
- .debug_macro   0x0001b6ef       0x1c ./Core/Src/syscalls.o
- .debug_macro   0x0001b70b       0x10 ./Core/Src/syscalls.o
- .debug_macro   0x0001b71b      0x18a ./Core/Src/syscalls.o
- .debug_macro   0x0001b8a5       0x16 ./Core/Src/syscalls.o
- .debug_macro   0x0001b8bb       0xce ./Core/Src/syscalls.o
- .debug_macro   0x0001b989       0xff ./Core/Src/sysmem.o
- .debug_macro   0x0001ba88      0x23c ./Core/Src/sysmem.o
- .debug_macro   0x0001bcc4      0x1e0 ./Core/Src/system_stm32g0xx.o
- .debug_macro   0x0001bea4      0x1f9 ./Core/Src/usart.o
- .debug_macro   0x0001c09d      0x204 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal.o
- .debug_macro   0x0001c2a1      0x1e0 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_cortex.o
- .debug_macro   0x0001c481      0x1e0 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_dma.o
- .debug_macro   0x0001c661      0x1e7 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_gpio.o
- .debug_macro   0x0001c848      0x20a ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_pwr_ex.o
- .debug_macro   0x0001ca52      0x228 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_rcc.o
- .debug_macro   0x0001cc7a      0x1f8 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_rcc_ex.o
- .debug_macro   0x0001ce72      0x1e8 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_spi.o
- .debug_macro   0x0001d05a      0x20b ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_uart.o
- .debug_macro   0x0001d265      0x1ec ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_uart_ex.o
- .debug_macro   0x0001d451      0x217 ./Drivers/VL53L8CX_ULD_API/src/Porting.o
- .debug_macro   0x0001d668      0x35e ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001d9c6      0x11c ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001dae2       0x94 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001db76       0x1c ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001db92       0x56 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001dbe8       0x70 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001dc58       0x1c ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001dc74       0x94 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
- .debug_macro   0x0001dd08      0x301 ./Drivers/VL53L8CX_ULD_API/src/platform.o
- .debug_macro   0x0001e009       0x10 ./Drivers/VL53L8CX_ULD_API/src/platform.o
- .debug_macro   0x0001e019      0x2fe ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_api.o
- .debug_macro   0x0001e317       0x10 ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_api.o
- .debug_macro   0x0001e327      0x2dc ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_detection_thresholds.o
- .debug_macro   0x0001e603       0x8e ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_detection_thresholds.o
- .debug_macro   0x0001e691      0x2de ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_motion_indicator.o
- .debug_macro   0x0001e96f      0x19b ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_motion_indicator.o
- .debug_macro   0x0001eb0a      0x2dc ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_xtalk.o
- .debug_macro   0x0001ede6       0x16 ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_xtalk.o
+ .debug_macro   0x000001f9      0x1f9 ./Core/Src/gpio.o
+ .debug_macro   0x000003f2      0x388 ./Core/Src/main.o
+ .debug_macro   0x0000077a       0x61 ./Core/Src/main.o
+ .debug_macro   0x000007db       0x24 ./Core/Src/main.o
+ .debug_macro   0x000007ff       0x43 ./Core/Src/main.o
+ .debug_macro   0x00000842       0x34 ./Core/Src/main.o
+ .debug_macro   0x00000876       0x16 ./Core/Src/main.o
+ .debug_macro   0x0000088c       0x35 ./Core/Src/main.o
+ .debug_macro   0x000008c1      0x369 ./Core/Src/main.o
+ .debug_macro   0x00000c2a       0x10 ./Core/Src/main.o
+ .debug_macro   0x00000c3a       0x16 ./Core/Src/main.o
+ .debug_macro   0x00000c50       0x43 ./Core/Src/main.o
+ .debug_macro   0x00000c93       0x34 ./Core/Src/main.o
+ .debug_macro   0x00000cc7       0x10 ./Core/Src/main.o
+ .debug_macro   0x00000cd7       0x58 ./Core/Src/main.o
+ .debug_macro   0x00000d2f       0x8e ./Core/Src/main.o
+ .debug_macro   0x00000dbd       0x1c ./Core/Src/main.o
+ .debug_macro   0x00000dd9      0x177 ./Core/Src/main.o
+ .debug_macro   0x00000f50       0x16 ./Core/Src/main.o
+ .debug_macro   0x00000f66       0x16 ./Core/Src/main.o
+ .debug_macro   0x00000f7c      0x146 ./Core/Src/main.o
+ .debug_macro   0x000010c2       0x16 ./Core/Src/main.o
+ .debug_macro   0x000010d8       0x20 ./Core/Src/main.o
+ .debug_macro   0x000010f8      0x1f5 ./Core/Src/main.o
+ .debug_macro   0x000012ed      0x1f9 ./Core/Src/spi.o
+ .debug_macro   0x000014e6      0x1ef ./Core/Src/stm32g0xx_hal_msp.o
+ .debug_macro   0x000016d5      0x1f9 ./Core/Src/stm32g0xx_it.o
+ .debug_macro   0x000018ce      0x274 ./Core/Src/syscalls.o
+ .debug_macro   0x00001b42       0x5b ./Core/Src/syscalls.o
+ .debug_macro   0x00001b9d       0x94 ./Core/Src/syscalls.o
+ .debug_macro   0x00001c31       0x57 ./Core/Src/syscalls.o
+ .debug_macro   0x00001c88       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x00001c98       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x00001ca8       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x00001cb8       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x00001cc8       0x1c ./Core/Src/syscalls.o
+ .debug_macro   0x00001ce4       0x52 ./Core/Src/syscalls.o
+ .debug_macro   0x00001d36       0x22 ./Core/Src/syscalls.o
+ .debug_macro   0x00001d58       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x00001d68       0x52 ./Core/Src/syscalls.o
+ .debug_macro   0x00001dba       0xcf ./Core/Src/syscalls.o
+ .debug_macro   0x00001e89       0x1c ./Core/Src/syscalls.o
+ .debug_macro   0x00001ea5       0x3d ./Core/Src/syscalls.o
+ .debug_macro   0x00001ee2       0x35 ./Core/Src/syscalls.o
+ .debug_macro   0x00001f17      0x12c ./Core/Src/syscalls.o
+ .debug_macro   0x00002043       0x16 ./Core/Src/syscalls.o
+ .debug_macro   0x00002059       0x16 ./Core/Src/syscalls.o
+ .debug_macro   0x0000206f       0x29 ./Core/Src/syscalls.o
+ .debug_macro   0x00002098       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x000020a8      0x242 ./Core/Src/syscalls.o
+ .debug_macro   0x000022ea       0x1c ./Core/Src/syscalls.o
+ .debug_macro   0x00002306       0x10 ./Core/Src/syscalls.o
+ .debug_macro   0x00002316      0x18a ./Core/Src/syscalls.o
+ .debug_macro   0x000024a0       0x16 ./Core/Src/syscalls.o
+ .debug_macro   0x000024b6       0xce ./Core/Src/syscalls.o
+ .debug_macro   0x00002584       0xff ./Core/Src/sysmem.o
+ .debug_macro   0x00002683      0x23c ./Core/Src/sysmem.o
+ .debug_macro   0x000028bf      0x1e0 ./Core/Src/system_stm32g0xx.o
+ .debug_macro   0x00002a9f      0x1f9 ./Core/Src/usart.o
+ .debug_macro   0x00002c98      0x204 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal.o
+ .debug_macro   0x00002e9c      0x1e0 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_cortex.o
+ .debug_macro   0x0000307c      0x1e0 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_dma.o
+ .debug_macro   0x0000325c      0x1e7 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_gpio.o
+ .debug_macro   0x00003443      0x20a ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_pwr_ex.o
+ .debug_macro   0x0000364d      0x228 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_rcc.o
+ .debug_macro   0x00003875      0x1f8 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_rcc_ex.o
+ .debug_macro   0x00003a6d      0x1e8 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_spi.o
+ .debug_macro   0x00003c55      0x20b ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_uart.o
+ .debug_macro   0x00003e60      0x1ec ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_uart_ex.o
+ .debug_macro   0x0000404c      0x217 ./Drivers/VL53L8CX_ULD_API/src/Porting.o
+ .debug_macro   0x00004263      0x35e ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x000045c1      0x11c ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x000046dd       0x94 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x00004771       0x1c ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x0000478d       0x56 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x000047e3       0x70 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x00004853       0x1c ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x0000486f       0x94 ./Drivers/VL53L8CX_ULD_API/src/VL53L8CX_APIs.o
+ .debug_macro   0x00004903      0x301 ./Drivers/VL53L8CX_ULD_API/src/platform.o
+ .debug_macro   0x00004c04       0x10 ./Drivers/VL53L8CX_ULD_API/src/platform.o
+ .debug_macro   0x00004c14      0x2fe ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_api.o
+ .debug_macro   0x00004f12       0x10 ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_api.o
+ .debug_macro   0x00004f22      0x2dc ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_detection_thresholds.o
+ .debug_macro   0x000051fe       0x8e ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_detection_thresholds.o
+ .debug_macro   0x0000528c      0x2de ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_motion_indicator.o
+ .debug_macro   0x0000556a      0x19b ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_motion_indicator.o
+ .debug_macro   0x00005705      0x2dc ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_xtalk.o
+ .debug_macro   0x000059e1       0x16 ./Drivers/VL53L8CX_ULD_API/src/vl53l8cx_plugin_xtalk.o
 
 .debug_line     0x00000000    0x17d14
  .debug_line    0x00000000      0x791 ./Core/Src/dma.o
