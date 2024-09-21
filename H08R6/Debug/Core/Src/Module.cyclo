@@ -1,3 +1,5 @@
-../Core/Src/Module.c:19:14:ModuleInit	6
-../Core/Src/Module.c:40:14:SetResolution	5
-../Core/Src/Module.c:56:14:SetPwrMode	7
+../Core/Src/Module.c:17:14:ModuleInit	6
+../Core/Src/Module.c:38:14:SetResolution	5
+../Core/Src/Module.c:54:14:SetPwrMode	7
+../Core/Src/Module.c:74:14:SetRangingMode	5
+../Core/Src/Module.c:90:14:SampleRangingAllData	3

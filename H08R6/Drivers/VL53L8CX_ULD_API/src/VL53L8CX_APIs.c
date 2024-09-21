@@ -494,3 +494,14 @@ VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* data){
 
 	return VL53L8CX_OK;
 }
+
+VL53L8CX_Status VL53L8CX_GetResolution(uint8_t *res){
+	status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
+	if(p_data_ready)
+	{
+		vl53l8cx_get_resolution(&Dev, &res);
+	}
+
+	return VL53L8CX_OK;
+
+}

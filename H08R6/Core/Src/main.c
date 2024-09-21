@@ -46,16 +46,6 @@ VL53L8CX_APIs_ResultsData Data;
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define VL53L8CX_APIs_RESOLUTIN_4	((uint8_t) 16U)
-#define VL53L8CX_APIs_RESOLUTIN_8	((uint8_t) 64U)
-#define VL53L8CX_APIs_FREQUANCY		5U
-#define VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS		((uint8_t) 3U)
-#define VL53L8CX_APIs_RANGING_MODE_CONTINUOUS		((uint8_t) 1U)
-#define VL53L8CX_APIs_PWR_MODE_SLEEP		((uint8_t) 0U)
-#define VL53L8CX_APIs_PWR_MODE_WAKEUP		((uint8_t) 1U)
-#define VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP	((uint8_t) 2U)
-#define VL53L8CX_APIs_SHARPENER	((uint8_t) 6U)   // Default value sharpener is 5%
-
 
 /* USER CODE END PM */
 

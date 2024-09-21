@@ -25,6 +25,17 @@ extern "C" {
 #include "vl53l8cx_plugin_motion_indicator.h"
 #include "main.h"
 
+/* Private macros ------------------------------------------------------------*/
+#define VL53L8CX_APIs_RESOLUTIN_4	((uint8_t) 16U)
+#define VL53L8CX_APIs_RESOLUTIN_8	((uint8_t) 64U)
+#define VL53L8CX_APIs_FREQUANCY		5U
+#define VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS		((uint8_t) 3U)
+#define VL53L8CX_APIs_RANGING_MODE_CONTINUOUS		((uint8_t) 1U)
+#define VL53L8CX_APIs_PWR_MODE_SLEEP		((uint8_t) 0U)
+#define VL53L8CX_APIs_PWR_MODE_WAKEUP		((uint8_t) 1U)
+#define VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP	((uint8_t) 2U)
+#define VL53L8CX_APIs_SHARPENER	((uint8_t) 6U)   // Default value sharpener is 5%
+
 /* Exported types ------------------------------------------------------------*/
 typedef enum {
 	VL53L8CX_OK = 0,
@@ -114,6 +125,8 @@ VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_ResultsData* data);
 VL53L8CX_Status VL53L8CX_VisualizeXtalk(void);
 
 VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* data);
+
+VL53L8CX_Status VL53L8CX_GetResolution(uint8_t *res);
 
 #endif /* VL53L8CX_APIs */
 /************************ (C) COPYRIGHT Hexabitz *****END OF FILE****/
