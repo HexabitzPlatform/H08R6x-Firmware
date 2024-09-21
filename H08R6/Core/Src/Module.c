@@ -14,8 +14,6 @@
 
 #include "Module.h"
 
-
-
 StatusModule ModuleInit(void){
 
 	if(VL53L8CX_Init())
@@ -66,10 +64,27 @@ StatusModule SetPwrMode(uint8_t pwr){
 				return MODULE_ERR_PWR;
 	}
 	else if(pwr == DEEP_SLEEP)
-		{
-			if(VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP))
-					return MODULE_ERR_PWR;
-		}
+	{
+		if(VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP))
+				return MODULE_ERR_PWR;
+	}
+	return MODULE_OK;
+}
+
+StatusModule SetRangingMode(uint8_t rang){
+	if(rang == AUTONOMOUS)
+	{
+		if(VL53L8CX_SetRangingMode(VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS))
+				return MODULE_ERR_Rang;
+	}
+	else if(pwr == CONTINUOUS)
+	{
+		if(VL53L8CX_SetRangingMode(VL53L8CX_APIs_RANGING_MODE_CONTINUOUS))
+				return MODULE_ERR_Rang;
+	}
+
 	return MODULE_OK;
 
 }
+
+

@@ -70,5 +70,7 @@ StatusModule SetResolution(uint8_t res);
 
 StatusModule SetPwrMode(uint8_t pwr);
 
+StatusModule SetRangingMode(uint8_t rang);
+
 
 #endif /* INC_MODULE_H_ */
