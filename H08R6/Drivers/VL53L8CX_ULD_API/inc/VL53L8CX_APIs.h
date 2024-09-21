@@ -20,6 +20,9 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "vl53l8cx_api.h"
+#include "vl53l8cx_plugin_xtalk.h"
+#include "vl53l8cx_plugin_detection_thresholds.h"
+#include "vl53l8cx_plugin_motion_indicator.h"
 #include "main.h"
 
 /* Exported types ------------------------------------------------------------*/

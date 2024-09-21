@@ -15,9 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "VL53L8CX_APIS.h"
-#include "vl53l8cx_plugin_xtalk.h"
-#include "vl53l8cx_plugin_detection_thresholds.h"
-#include "vl53l8cx_plugin_motion_indicator.h"
+
 
 /* Exported Type's instance  ---------------------------------------------*/
 int status;
