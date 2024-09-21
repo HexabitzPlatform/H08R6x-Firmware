@@ -1,2 +1,3 @@
 ../Core/Src/Module.c:19:14:ModuleInit	6
 ../Core/Src/Module.c:40:14:SetResolution	5
+../Core/Src/Module.c:56:14:SetPwrMode	7

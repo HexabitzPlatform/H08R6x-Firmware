@@ -200,12 +200,14 @@ Discarded input sections
                 0x00000000       0x50 ./Core/Src/Module.o
  .text.SetResolution
                 0x00000000       0x42 ./Core/Src/Module.o
- .debug_info    0x00000000      0x29e ./Core/Src/Module.o
- .debug_abbrev  0x00000000      0x10b ./Core/Src/Module.o
+ .text.SetPwrMode
+                0x00000000       0x58 ./Core/Src/Module.o
+ .debug_info    0x00000000      0x2e1 ./Core/Src/Module.o
+ .debug_abbrev  0x00000000      0x10e ./Core/Src/Module.o
  .debug_aranges
-                0x00000000       0x28 ./Core/Src/Module.o
+                0x00000000       0x30 ./Core/Src/Module.o
  .debug_rnglists
-                0x00000000       0x19 ./Core/Src/Module.o
+                0x00000000       0x1f ./Core/Src/Module.o
  .debug_macro   0x00000000      0x315 ./Core/Src/Module.o
  .debug_macro   0x00000000      0xa8a ./Core/Src/Module.o
  .debug_macro   0x00000000      0x12a ./Core/Src/Module.o
@@ -269,10 +271,10 @@ Discarded input sections
  .debug_macro   0x00000000       0x1c ./Core/Src/Module.o
  .debug_macro   0x00000000       0x94 ./Core/Src/Module.o
  .debug_macro   0x00000000       0x3a ./Core/Src/Module.o
- .debug_line    0x00000000      0xa3c ./Core/Src/Module.o
- .debug_str     0x00000000    0xb0af3 ./Core/Src/Module.o
+ .debug_line    0x00000000      0xa77 ./Core/Src/Module.o
+ .debug_str     0x00000000    0xb0b16 ./Core/Src/Module.o
  .comment       0x00000000       0x44 ./Core/Src/Module.o
- .debug_frame   0x00000000       0x4c ./Core/Src/Module.o
+ .debug_frame   0x00000000       0x6c ./Core/Src/Module.o
  .ARM.attributes
                 0x00000000       0x2c ./Core/Src/Module.o
  .group         0x00000000        0xc ./Core/Src/dma.o

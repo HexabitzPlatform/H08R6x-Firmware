@@ -49,8 +49,27 @@ StatusModule SetResolution(uint8_t res){
 		if(VL53L8CX_SetResolution(VL53L8CX_APIs_RESOLUTIN_8))
 				return MODULE_ERR_RES;
 	}
+	return MODULE_OK;
 
+}
 
+StatusModule SetPwrMode(uint8_t pwr){
+
+	if(pwr == WAKEUP)
+	{
+		if(VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_WAKEUP))
+				return MODULE_ERR_PWR;
+	}
+	else if(pwr == SLEEP)
+	{
+		if(VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_SLEEP))
+				return MODULE_ERR_PWR;
+	}
+	else if(pwr == DEEP_SLEEP)
+		{
+			if(VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP))
+					return MODULE_ERR_PWR;
+		}
 	return MODULE_OK;
 
 }

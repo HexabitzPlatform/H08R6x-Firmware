@@ -68,5 +68,7 @@ StatusModule ModuleInit(void);
 
 StatusModule SetResolution(uint8_t res);
 
+StatusModule SetPwrMode(uint8_t pwr);
+
 
 #endif /* INC_MODULE_H_ */
