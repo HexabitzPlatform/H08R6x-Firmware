@@ -33,9 +33,18 @@
 /* USER CODE BEGIN PTD */
 
 uint8_t sharpener;
+
 uint32_t integration_time_ms;
+
 uint8_t DataCalibrate[800];
+
 VL53L8CX_APIs_ResultsData Data;
+
+VL53L8CX_APIs_Distance Distance;
+
+VL53L8CX_APIs_NOfTargets Nb_target;
+
+VL53L8CX_APIs_Indicator Indicator;
 
 /* USER CODE END PTD */
 
@@ -46,7 +55,6 @@ VL53L8CX_APIs_ResultsData Data;
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -114,42 +122,15 @@ int main(void)
 
   VL53L8CX_Init();
 
-  VL53L8CX_SetResolution(VL53L8CX_APIs_RESOLUTIN_4);
+  VL53L8CX_SampleRangingAllData(&Data);
 
-  VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY);
+  VL53L8CX_MotionIndicator(&Indicator);
 
-  VL53L8CX_SetRangingMode(VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS);
+  VL53L8CX_SampleDistance(&Distance);
 
-  VL53L8CX_SetPowerMode(VL53L8CX_APIs_PWR_MODE_WAKEUP);
-
-  VL53L8CX_GetIntegrationTime(&integration_time_ms);
-
-  VL53L8CX_SetIntegrationTime(integration_time_ms);
-
-  VL53L8CX_SetSharpener(VL53L8CX_APIs_SHARPENER);
-
-  VL53L8CX_GetSharpener(&sharpener);
-
-  VL53L8CX_Detection_Thresholds(&Data);
-
-  VL53L8CX_SampleRanging(&Data);
-
-  VL53L8CX_SYNCRanging(&Data);
-
-  VL53L8CX_Calibration();
-
-  VL53L8CX_GetCalibrationData(&DataCalibrate);
-
-  VL53L8CX_VisualizeXtalk();
-
-  VL53L8CX_MotionIndicator(&Data);
-
-  VL53L8CX_SetCalibrationData(DataCalibrate);
-
-  VL53L8CX_SampleRanging(&Data);
+  VL53L8CX_NumberofTargets(&Nb_target);
 
   VL53L8CX_StopRanging();
-
 
   /* USER CODE END 2 */
 

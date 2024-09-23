@@ -26,15 +26,9 @@ extern "C" {
 #include "main.h"
 
 /* Private macros ------------------------------------------------------------*/
-#define VL53L8CX_APIs_RESOLUTIN_4	((uint8_t) 16U)
-#define VL53L8CX_APIs_RESOLUTIN_8	((uint8_t) 64U)
 #define VL53L8CX_APIs_FREQUANCY		5U
-#define VL53L8CX_APIs_RANGING_MODE_AUTONOMOUS		((uint8_t) 3U)
-#define VL53L8CX_APIs_RANGING_MODE_CONTINUOUS		((uint8_t) 1U)
-#define VL53L8CX_APIs_PWR_MODE_SLEEP		((uint8_t) 0U)
-#define VL53L8CX_APIs_PWR_MODE_WAKEUP		((uint8_t) 1U)
-#define VL53L8CX_APIs_PWR_MODE_DEEP_SLEEP	((uint8_t) 2U)
-#define VL53L8CX_APIs_SHARPENER	((uint8_t) 6U)   // Default value sharpener is 5%
+#define LOW_MOTION_INDICATOR	((uint16_t) 500U)
+#define HIGH_MOTION_INDICATOR	((uint16_t) 1000U)
 
 /* Exported types ------------------------------------------------------------*/
 typedef enum {
@@ -47,8 +41,28 @@ typedef enum {
 	VL53L8CX_ERR_Rang,
 	VL53L8CX_ERR_INTEG_TIME,
 	VL53L8CX_ERR_CALIBRATE,
-	VL53L8CX_ERR_SHARPENER
+	VL53L8CX_ERR_SHARPENER,
+	VL53L8CX_ERR_MOTION_IND
 }VL53L8CX_Status;
+
+typedef enum
+{
+	WAKEUP = 0x00,
+	SLEEP = 0x01,
+	DEEP_SLEEP = 0x02,
+}PwrMode_e;
+
+typedef enum
+{
+	AUTONOMOUS = 0x00,
+	CONTINUOUS = 0x01,
+}RangingMode_e;
+
+typedef enum
+{
+	RES_4_BY_4 = 0x00,
+	RES_8_BY_8 = 0x01,
+}Resolution_e;
 
 typedef struct
 {
@@ -88,21 +102,37 @@ typedef struct
 	} motion_indicator;
 } VL53L8CX_APIs_ResultsData;
 
+typedef struct
+{
+	int16_t distance[(VL53L8CX_RESOLUTION_8X8*VL53L8CX_NB_TARGET_PER_ZONE)];
+}VL53L8CX_APIs_Distance;
+
+typedef struct
+{
+	int16_t nb_target[VL53L8CX_RESOLUTION_8X8];
+}VL53L8CX_APIs_NOfTargets;
+
+typedef struct
+{
+	int16_t indicator[VL53L8CX_RESOLUTION_8X8];
+}VL53L8CX_APIs_Indicator;
+
+
+
+typedef struct
+{
+	uint32_t global_indicator_1;
+	uint32_t global_indicator_2;
+	uint8_t	 status;
+	uint8_t	 nb_of_detected_aggregates;
+	uint8_t	 nb_of_aggregates;
+	uint8_t	 spare;
+	uint32_t motion[32];
+} VL53L8CX_APIs_motion_indicator;
+
 /* Exported functions  ---------------------------------------------*/
 
-VL53L8CX_Status VL53L8CX_Init(void);
-
-VL53L8CX_Status VL53L8CX_SetResolution(uint8_t res);
-
-VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t freq);
-
-VL53L8CX_Status VL53L8CX_SetRangingMode(uint8_t rangMode);
-
-VL53L8CX_Status VL53L8CX_SetPowerMode(uint8_t pwrMode);
-
-VL53L8CX_Status VL53L8CX_SampleRanging(VL53L8CX_APIs_ResultsData* data);
-
-VL53L8CX_Status VL53L8CX_StopRanging(void);
+VL53L8CX_Status VL53L8CX_Reset(void);
 
 VL53L8CX_Status VL53L8CX_GetIntegrationTime(uint32_t* integration_time_ms);
 
@@ -120,13 +150,29 @@ VL53L8CX_Status VL53L8CX_SetCalibrationData(uint8_t* pDataCalibrate);
 
 VL53L8CX_Status VL53L8CX_Detection_Thresholds(VL53L8CX_APIs_ResultsData* data);
 
-VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_ResultsData* data);
-
-VL53L8CX_Status VL53L8CX_VisualizeXtalk(void);
-
 VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* data);
 
-VL53L8CX_Status VL53L8CX_GetResolution(uint8_t *res);
+/* Exported functions prototypes ---------------------------------------------*/
+
+VL53L8CX_Status VL53L8CX_Init(void);
+
+VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e res);
+
+VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e pwr);
+
+VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e rang);
+
+VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t freq);
+
+VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets* NofTargets);
+
+VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance* Distance);
+
+VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator* Indicator);
+
+VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* data);
+
+VL53L8CX_Status VL53L8CX_StopRanging(void);
 
 #endif /* VL53L8CX_APIs */
 /************************ (C) COPYRIGHT Hexabitz *****END OF FILE****/
