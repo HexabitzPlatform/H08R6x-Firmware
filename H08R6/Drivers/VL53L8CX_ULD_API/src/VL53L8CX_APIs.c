@@ -28,6 +28,8 @@ VL53L8CX_Motion_Configuration 	motion_config;
 uint16_t idx;
 VL53L8CX_DetectionThresholds thresholds[VL53L8CX_NB_THRESHOLDS];
 uint8_t					xtalk_data[VL53L8CX_XTALK_BUFFER_SIZE];
+double elapsedTime;
+double cpu_time_used;
 #define is_interrupt 0
 
 /* Platform Exported Functions ********************************************/
@@ -55,6 +57,11 @@ void delay(uint32_t ms){
 
 	HAL_Delay(ms);
 
+}
+
+uint32_t time_ms()
+{
+	return HAL_GetTick();
 }
 
 /**************************************************************************/
@@ -386,6 +393,66 @@ VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance* Distance)
 			return VL53L8CX_ERR_Rang;
 	return VL53L8CX_OK;
 
+}
+
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_SampleDistanceAverage(float* distance_a)
+{
+	if(vl53l8cx_start_ranging(&Dev))
+		return VL53L8CX_ERR_Rang;
+	if (is_interrupt) {
+		get_data_by_interrupt(&Dev);
+	}
+	else {
+		get_data_by_polling(&Dev);
+	}
+
+		*distance_a = (float)((Results.distance_mm[5]+Results.distance_mm[6]+Results.distance_mm[9]+Results.distance_mm[10])/4.0f);
+	if(VL53L8CX_StopRanging())
+			return VL53L8CX_ERR_Rang;
+	return VL53L8CX_OK;
+
+}
+
+/**********************************************************************/
+
+VL53L8CX_Status VL53L8CX_StreamDistance(float* distance_a, double time_out)
+{
+	uint32_t startTime , end;
+
+	if(vl53l8cx_start_ranging(&Dev))
+			return VL53L8CX_ERR_Rang;
+
+	if (is_interrupt) {
+		startTime = time_ms();
+		end = time_ms();
+		elapsedTime = ((double)(end-startTime)/10);
+		while(elapsedTime<time_out)
+		{
+			get_data_by_interrupt(&Dev);
+			*distance_a = (float)((Results.distance_mm[5]+Results.distance_mm[6]+Results.distance_mm[9]+Results.distance_mm[10])/4.0f);
+			end = time_ms();
+			elapsedTime = ((double)(end-startTime)/1000);
+
+		}
+	}
+	else {
+		startTime = time_ms();
+		end = time_ms();
+		elapsedTime = ((double)(end-startTime)/10);
+		while(elapsedTime<time_out)
+		{
+			get_data_by_polling(&Dev);
+			*distance_a = (float)((Results.distance_mm[5]+Results.distance_mm[6]+Results.distance_mm[9]+Results.distance_mm[10])/4.0f);
+			end = time_ms();
+			elapsedTime = ((double)(end-startTime)/1000);
+		}
+
+	}
+	if(VL53L8CX_StopRanging())
+				return VL53L8CX_ERR_Rang;
+		return VL53L8CX_OK;
 }
 
 /**********************************************************************/

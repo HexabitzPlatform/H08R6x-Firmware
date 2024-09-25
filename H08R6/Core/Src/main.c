@@ -42,6 +42,8 @@ VL53L8CX_APIs_ResultsData Data;
 
 VL53L8CX_APIs_Distance Distance;
 
+float distance_average;
+
 VL53L8CX_APIs_NOfTargets Nb_target;
 
 VL53L8CX_APIs_Indicator Indicator;
@@ -122,15 +124,19 @@ int main(void)
 
   VL53L8CX_Init();
 
-  VL53L8CX_SampleRangingAllData(&Data);
+  /*VL53L8CX_SampleRangingAllData(&Data);
 
   VL53L8CX_MotionIndicator(&Indicator);
 
-  VL53L8CX_SampleDistance(&Distance);
+  VL53L8CX_SampleDistance(&Distance);*/
 
-  VL53L8CX_NumberofTargets(&Nb_target);
+  VL53L8CX_SampleDistanceAverage(&distance_average);
 
-  VL53L8CX_StopRanging();
+  VL53L8CX_StreamDistance(&distance_average, 5);
+
+  /*VL53L8CX_NumberofTargets(&Nb_target);
+
+  VL53L8CX_StopRanging();*/
 
   /* USER CODE END 2 */
 
