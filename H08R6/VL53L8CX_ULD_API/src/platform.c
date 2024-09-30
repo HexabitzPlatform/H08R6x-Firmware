@@ -11,7 +11,7 @@
   */
 
 #include "platform.h"
-#include "Porting.h"
+#include "VL53L8CX_APIS.h"
 
 /* Macros defined for SPI communication */
 #define VL53L8CX_COMMS_CHUNK_SIZE 4096
@@ -81,7 +81,7 @@ uint8_t VL53L8CX_WrMulti(
 		ResetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
 
 		//HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
-		status |=  SendSPI(&hspi2, data_write, data_size);
+		status |=  SendSPI(VL53L8CX_SPI_HANDLER, data_write, data_size);
 	//	status |=  HAL_SPI_Transmit(&hspi2, data_write, data_size, 100*data_size);
 		SetGPIOsPin(NCS_GPIO_Port, NCS_Pin);
 		//HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_SET);

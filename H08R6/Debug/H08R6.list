@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_rnglists 00000b0e  00000000  00000000  000463c0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  0001dcc4  00000000  00000000  00046ece  2**0
+ 17 .debug_macro  0001ddea  00000000  00000000  00046ece  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00015d16  00000000  00000000  00064b92  2**0
+ 18 .debug_line   00015dee  00000000  00000000  00064cb8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000b55a2  00000000  00000000  0007a8a8  2**0
+ 19 .debug_str    000b55b8  00000000  00000000  0007aaa6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  000031f4  00000000  00000000  0012fe4c  2**2
+ 20 .debug_frame  000031f4  00000000  00000000  00130060  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000066  00000000  00000000  00133040  2**0
+ 21 .debug_line_str 00000066  00000000  00000000  00133254  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -13034,26 +13034,25 @@ static void UARTEx_SetNbDataToProcess(UART_HandleTypeDef *huart)
  8004970:	08007bd4 	.word	0x08007bd4
 
 08004974 <HAL_GPIO_EXTI_Falling_Callback>:
-uint8_t							xtalk_data[VL53L8CX_XTALK_BUFFER_SIZE];
+void get_data_by_polling(VL53L8CX_Configuration *p_dev);
+void get_data_by_interrupt(VL53L8CX_Configuration *p_dev);
 
 
 /* Platform Exported Functions ********************************************/
-void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
-{
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
  8004974:	b580      	push	{r7, lr}
  8004976:	b082      	sub	sp, #8
  8004978:	af00      	add	r7, sp, #0
  800497a:	0002      	movs	r2, r0
  800497c:	1dbb      	adds	r3, r7, #6
  800497e:	801a      	strh	r2, [r3, #0]
-	if (GPIO_Pin==INT_Pin)
+	if (GPIO_Pin == INT_Pin) {
  8004980:	1dbb      	adds	r3, r7, #6
  8004982:	881a      	ldrh	r2, [r3, #0]
  8004984:	2380      	movs	r3, #128	; 0x80
  8004986:	01db      	lsls	r3, r3, #7
  8004988:	429a      	cmp	r2, r3
  800498a:	d104      	bne.n	8004996 <HAL_GPIO_EXTI_Falling_Callback+0x22>
-	{
 		IntCount++;
  800498c:	4b04      	ldr	r3, [pc, #16]	; (80049a0 <HAL_GPIO_EXTI_Falling_Callback+0x2c>)
  800498e:	681b      	ldr	r3, [r3, #0]
@@ -13075,13 +13074,12 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
  * @brief get reading data with polling mode after starting ranging
  * @param1: (VL53L8CX_Configuration) *p_dev :  VL53L8CX Configuration structure.
  */
-void get_data_by_polling(VL53L8CX_Configuration *p_dev){
+void get_data_by_polling(VL53L8CX_Configuration *p_dev) {
  80049a4:	b580      	push	{r7, lr}
  80049a6:	b082      	sub	sp, #8
  80049a8:	af00      	add	r7, sp, #0
  80049aa:	6078      	str	r0, [r7, #4]
-	do
-	{
+	do {
 		status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
  80049ac:	4a15      	ldr	r2, [pc, #84]	; (8004a04 <get_data_by_polling+0x60>)
  80049ae:	4b16      	ldr	r3, [pc, #88]	; (8004a08 <get_data_by_polling+0x64>)
@@ -13093,7 +13091,7 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
  80049bc:	4b13      	ldr	r3, [pc, #76]	; (8004a0c <get_data_by_polling+0x68>)
  80049be:	601a      	str	r2, [r3, #0]
 
-		if(p_data_ready){
+		if (p_data_ready) {
  80049c0:	4b10      	ldr	r3, [pc, #64]	; (8004a04 <get_data_by_polling+0x60>)
  80049c2:	781b      	ldrb	r3, [r3, #0]
  80049c4:	2b00      	cmp	r3, #0
@@ -13120,15 +13118,14 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
  80049ee:	601a      	str	r2, [r3, #0]
 			break;
  80049f0:	e003      	b.n	80049fa <get_data_by_polling+0x56>
-		}else{
+		} else {
 			_DELAY_MS(5);
  80049f2:	2005      	movs	r0, #5
  80049f4:	f7fc fd5e 	bl	80014b4 <HAL_Delay>
 		status = vl53l8cx_check_data_ready(&Dev, &p_data_ready);
  80049f8:	e7d8      	b.n	80049ac <get_data_by_polling+0x8>
 		}
-	}
-	while(1);
+	} while (1);
 
 }
  80049fa:	46c0      	nop			; (mov r8, r8)
@@ -13148,7 +13145,7 @@ void get_data_by_polling(VL53L8CX_Configuration *p_dev){
  * to load the firmware into the VL53L8CX. It takes a few hundred milliseconds.
  * @return (uint8_t) status : 0 if OK
  */
-VL53L8CX_Status VL53L8CX_Reset(void){
+VL53L8CX_Status VL53L8CX_Reset(void) {
  8004a18:	b580      	push	{r7, lr}
  8004a1a:	af00      	add	r7, sp, #0
 
@@ -13159,7 +13156,7 @@ VL53L8CX_Status VL53L8CX_Reset(void){
  8004a20:	f000 fbc0 	bl	80051a4 <VL53L8CX_Reset_Sensor>
 
 	/* Check if there is a VL53L8CX sensor connected */
-	if(vl53l8cx_is_alive(&Dev, &isAlive))
+	if (vl53l8cx_is_alive(&Dev, &isAlive))
  8004a24:	4a0e      	ldr	r2, [pc, #56]	; (8004a60 <VL53L8CX_Reset+0x48>)
  8004a26:	4b0d      	ldr	r3, [pc, #52]	; (8004a5c <VL53L8CX_Reset+0x44>)
  8004a28:	0011      	movs	r1, r2
@@ -13170,7 +13167,7 @@ VL53L8CX_Status VL53L8CX_Reset(void){
 		return VL53L8CX_ERR_INIT;
  8004a34:	2301      	movs	r3, #1
  8004a36:	e00e      	b.n	8004a56 <VL53L8CX_Reset+0x3e>
-	if(!isAlive)
+	if (!isAlive)
  8004a38:	4b09      	ldr	r3, [pc, #36]	; (8004a60 <VL53L8CX_Reset+0x48>)
  8004a3a:	781b      	ldrb	r3, [r3, #0]
  8004a3c:	2b00      	cmp	r3, #0
@@ -13180,7 +13177,7 @@ VL53L8CX_Status VL53L8CX_Reset(void){
  8004a42:	e008      	b.n	8004a56 <VL53L8CX_Reset+0x3e>
 
 	/* Init VL53L8CX sensor */
-	if(vl53l8cx_init(&Dev))
+	if (vl53l8cx_init(&Dev))
  8004a44:	4b05      	ldr	r3, [pc, #20]	; (8004a5c <VL53L8CX_Reset+0x44>)
  8004a46:	0018      	movs	r0, r3
  8004a48:	f001 f884 	bl	8005b54 <vl53l8cx_init>
@@ -13202,11 +13199,11 @@ VL53L8CX_Status VL53L8CX_Reset(void){
 
 08004a64 <VL53L8CX_SetFrequancy>:
  * @param1 (uint8_t) frequency_hz : Contains the ranging frequency in Hz.
- * - For 4x4, min and max allowed values are : [1;60]
- * - For 8x8, min and max allowed values are : [1;15]
+ * - For 4x4, min and max allowed values are : [1:60]
+ * - For 8x8, min and max allowed values are : [1:15]
  * @return (uint8_t) status : 0 if ranging frequency is OK
  */
-VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t Freq){
+VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t Freq) {
  8004a64:	b580      	push	{r7, lr}
  8004a66:	b082      	sub	sp, #8
  8004a68:	af00      	add	r7, sp, #0
@@ -13214,7 +13211,7 @@ VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t Freq){
  8004a6c:	1dfb      	adds	r3, r7, #7
  8004a6e:	701a      	strb	r2, [r3, #0]
 
-	if(vl53l8cx_set_ranging_frequency_hz(&Dev, Freq))	// Set 5Hz ranging frequency
+	if (vl53l8cx_set_ranging_frequency_hz(&Dev, Freq))// Set 5Hz ranging frequency
  8004a70:	1dfb      	adds	r3, r7, #7
  8004a72:	781a      	ldrb	r2, [r3, #0]
  8004a74:	4b06      	ldr	r3, [pc, #24]	; (8004a90 <VL53L8CX_SetFrequancy+0x2c>)
@@ -13241,16 +13238,16 @@ VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t Freq){
  * sensor streams, after calling vl53l8cx_start_ranging().
  * @return (uint8_t) status : 0 if stop is OK
  */
-VL53L8CX_Status VL53L8CX_StopRanging(void){
+VL53L8CX_Status VL53L8CX_StopRanging(void) {
  8004a94:	b580      	push	{r7, lr}
  8004a96:	af00      	add	r7, sp, #0
-	if(vl53l8cx_stop_ranging(&Dev))
+	if (vl53l8cx_stop_ranging(&Dev))
  8004a98:	4b05      	ldr	r3, [pc, #20]	; (8004ab0 <VL53L8CX_StopRanging+0x1c>)
  8004a9a:	0018      	movs	r0, r3
  8004a9c:	f002 f89e 	bl	8006bdc <vl53l8cx_stop_ranging>
  8004aa0:	1e03      	subs	r3, r0, #0
  8004aa2:	d001      	beq.n	8004aa8 <VL53L8CX_StopRanging+0x14>
-			return VL53L8CX_ERR_Rang;
+		return VL53L8CX_ERR_Rang;
  8004aa4:	2306      	movs	r3, #6
  8004aa6:	e000      	b.n	8004aaa <VL53L8CX_StopRanging+0x16>
 	return VL53L8CX_OK;
@@ -13267,11 +13264,11 @@ VL53L8CX_Status VL53L8CX_StopRanging(void){
  * and wake up power mode.
  * @return: status
  */
-VL53L8CX_Status VL53L8CX_Init(void){
+VL53L8CX_Status VL53L8CX_Init(void) {
  8004ab4:	b580      	push	{r7, lr}
  8004ab6:	af00      	add	r7, sp, #0
 
-	if(VL53L8CX_Reset())
+	if (VL53L8CX_Reset())
  8004ab8:	f7ff ffae 	bl	8004a18 <VL53L8CX_Reset>
  8004abc:	1e03      	subs	r3, r0, #0
  8004abe:	d001      	beq.n	8004ac4 <VL53L8CX_Init+0x10>
@@ -13279,7 +13276,7 @@ VL53L8CX_Status VL53L8CX_Init(void){
  8004ac0:	2301      	movs	r3, #1
  8004ac2:	e01c      	b.n	8004afe <VL53L8CX_Init+0x4a>
 
-	if(VL53L8CX_SetResolution(ZONES_4X4))
+	if (VL53L8CX_SetResolution(ZONES_4X4))
  8004ac4:	2000      	movs	r0, #0
  8004ac6:	f000 f81d 	bl	8004b04 <VL53L8CX_SetResolution>
  8004aca:	1e03      	subs	r3, r0, #0
@@ -13288,7 +13285,7 @@ VL53L8CX_Status VL53L8CX_Init(void){
  8004ace:	2302      	movs	r3, #2
  8004ad0:	e015      	b.n	8004afe <VL53L8CX_Init+0x4a>
 
-	if(VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY))
+	if (VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY))
  8004ad2:	2005      	movs	r0, #5
  8004ad4:	f7ff ffc6 	bl	8004a64 <VL53L8CX_SetFrequancy>
  8004ad8:	1e03      	subs	r3, r0, #0
@@ -13297,7 +13294,7 @@ VL53L8CX_Status VL53L8CX_Init(void){
  8004adc:	2303      	movs	r3, #3
  8004ade:	e00e      	b.n	8004afe <VL53L8CX_Init+0x4a>
 
-	if(VL53L8CX_SetRangingMode(AUTONOMOUS))
+	if (VL53L8CX_SetRangingMode(AUTONOMOUS))
  8004ae0:	2000      	movs	r0, #0
  8004ae2:	f000 f871 	bl	8004bc8 <VL53L8CX_SetRangingMode>
  8004ae6:	1e03      	subs	r3, r0, #0
@@ -13306,7 +13303,7 @@ VL53L8CX_Status VL53L8CX_Init(void){
  8004aea:	2306      	movs	r3, #6
  8004aec:	e007      	b.n	8004afe <VL53L8CX_Init+0x4a>
 
-	if(VL53L8CX_SetPowerMode(WAKEUP))
+	if (VL53L8CX_SetPowerMode(WAKEUP))
  8004aee:	2000      	movs	r0, #0
  8004af0:	f000 f836 	bl	8004b60 <VL53L8CX_SetPowerMode>
  8004af4:	1e03      	subs	r3, r0, #0
@@ -13329,7 +13326,7 @@ VL53L8CX_Status VL53L8CX_Init(void){
  * @return: status
  * WARNING : As others settings depend to this one, it must be the first to use.
  */
-VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res){
+VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res) {
  8004b04:	b580      	push	{r7, lr}
  8004b06:	b082      	sub	sp, #8
  8004b08:	af00      	add	r7, sp, #0
@@ -13337,47 +13334,44 @@ VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res){
  8004b0c:	1dfb      	adds	r3, r7, #7
  8004b0e:	701a      	strb	r2, [r3, #0]
 
-	if(Res == ZONES_4X4)
+	if (Res == ZONES_4X4) {
  8004b10:	1dfb      	adds	r3, r7, #7
  8004b12:	781b      	ldrb	r3, [r3, #0]
  8004b14:	2b00      	cmp	r3, #0
  8004b16:	d108      	bne.n	8004b2a <VL53L8CX_SetResolution+0x26>
-	{
-		if(vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_4X4))
+		if (vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_4X4))
  8004b18:	4b10      	ldr	r3, [pc, #64]	; (8004b5c <VL53L8CX_SetResolution+0x58>)
  8004b1a:	2110      	movs	r1, #16
  8004b1c:	0018      	movs	r0, r3
  8004b1e:	f002 fc53 	bl	80073c8 <vl53l8cx_set_resolution>
  8004b22:	1e03      	subs	r3, r0, #0
  8004b24:	d00e      	beq.n	8004b44 <VL53L8CX_SetResolution+0x40>
-				return VL53L8CX_ERR_RES;
+			return VL53L8CX_ERR_RES;
  8004b26:	2302      	movs	r3, #2
  8004b28:	e014      	b.n	8004b54 <VL53L8CX_SetResolution+0x50>
-	}
-	else if(Res == ZONES_8X8)
+	} else if (Res == ZONES_8X8) {
  8004b2a:	1dfb      	adds	r3, r7, #7
  8004b2c:	781b      	ldrb	r3, [r3, #0]
  8004b2e:	2b01      	cmp	r3, #1
  8004b30:	d108      	bne.n	8004b44 <VL53L8CX_SetResolution+0x40>
-	{
-		if(vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_8X8))
+		if (vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_8X8))
  8004b32:	4b0a      	ldr	r3, [pc, #40]	; (8004b5c <VL53L8CX_SetResolution+0x58>)
  8004b34:	2140      	movs	r1, #64	; 0x40
  8004b36:	0018      	movs	r0, r3
  8004b38:	f002 fc46 	bl	80073c8 <vl53l8cx_set_resolution>
  8004b3c:	1e03      	subs	r3, r0, #0
  8004b3e:	d001      	beq.n	8004b44 <VL53L8CX_SetResolution+0x40>
-				return VL53L8CX_ERR_RES;
+			return VL53L8CX_ERR_RES;
  8004b40:	2302      	movs	r3, #2
  8004b42:	e007      	b.n	8004b54 <VL53L8CX_SetResolution+0x50>
 	}
 
-	if(VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY))
+	if (VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY))
  8004b44:	2005      	movs	r0, #5
  8004b46:	f7ff ff8d 	bl	8004a64 <VL53L8CX_SetFrequancy>
  8004b4a:	1e03      	subs	r3, r0, #0
  8004b4c:	d001      	beq.n	8004b52 <VL53L8CX_SetResolution+0x4e>
-			return VL53L8CX_ERR_Freq;
+		return VL53L8CX_ERR_Freq;
  8004b4e:	2303      	movs	r3, #3
  8004b50:	e000      	b.n	8004b54 <VL53L8CX_SetResolution+0x50>
 
@@ -13397,7 +13391,7 @@ VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res){
  * @param1: enum WAKEUP, SLEEP or DEEP_SLEEP.
  * @return: (uint8_t) status : 0 if power mode is OK.
  */
-VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr){
+VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr) {
  8004b60:	b580      	push	{r7, lr}
  8004b62:	b082      	sub	sp, #8
  8004b64:	af00      	add	r7, sp, #0
@@ -13405,54 +13399,49 @@ VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr){
  8004b68:	1dfb      	adds	r3, r7, #7
  8004b6a:	701a      	strb	r2, [r3, #0]
 
-	if(Pwr == WAKEUP)
+	if (Pwr == WAKEUP) {
  8004b6c:	1dfb      	adds	r3, r7, #7
  8004b6e:	781b      	ldrb	r3, [r3, #0]
  8004b70:	2b00      	cmp	r3, #0
  8004b72:	d108      	bne.n	8004b86 <VL53L8CX_SetPowerMode+0x26>
-	{
-		if(vl53l8cx_set_power_mode(&Dev, VL53L8CX_POWER_MODE_WAKEUP))
+		if (vl53l8cx_set_power_mode(&Dev, VL53L8CX_POWER_MODE_WAKEUP))
  8004b74:	4b13      	ldr	r3, [pc, #76]	; (8004bc4 <VL53L8CX_SetPowerMode+0x64>)
  8004b76:	2101      	movs	r1, #1
  8004b78:	0018      	movs	r0, r3
  8004b7a:	f001 fd3f 	bl	80065fc <vl53l8cx_set_power_mode>
  8004b7e:	1e03      	subs	r3, r0, #0
  8004b80:	d01b      	beq.n	8004bba <VL53L8CX_SetPowerMode+0x5a>
-				return VL53L8CX_ERR_PWR;
+			return VL53L8CX_ERR_PWR;
  8004b82:	2305      	movs	r3, #5
  8004b84:	e01a      	b.n	8004bbc <VL53L8CX_SetPowerMode+0x5c>
-	}
-	else if(Pwr == SLEEP)
+	} else if (Pwr == SLEEP) {
  8004b86:	1dfb      	adds	r3, r7, #7
  8004b88:	781b      	ldrb	r3, [r3, #0]
  8004b8a:	2b01      	cmp	r3, #1
  8004b8c:	d108      	bne.n	8004ba0 <VL53L8CX_SetPowerMode+0x40>
-	{
-		if(vl53l8cx_set_power_mode(&Dev, VL53L8CX_POWER_MODE_SLEEP))
+		if (vl53l8cx_set_power_mode(&Dev, VL53L8CX_POWER_MODE_SLEEP))
  8004b8e:	4b0d      	ldr	r3, [pc, #52]	; (8004bc4 <VL53L8CX_SetPowerMode+0x64>)
  8004b90:	2100      	movs	r1, #0
  8004b92:	0018      	movs	r0, r3
  8004b94:	f001 fd32 	bl	80065fc <vl53l8cx_set_power_mode>
  8004b98:	1e03      	subs	r3, r0, #0
  8004b9a:	d00e      	beq.n	8004bba <VL53L8CX_SetPowerMode+0x5a>
-				return VL53L8CX_ERR_PWR;
+			return VL53L8CX_ERR_PWR;
  8004b9c:	2305      	movs	r3, #5
  8004b9e:	e00d      	b.n	8004bbc <VL53L8CX_SetPowerMode+0x5c>
-	}
-	else if(Pwr == DEEP_SLEEP)
+	} else if (Pwr == DEEP_SLEEP) {
  8004ba0:	1dfb      	adds	r3, r7, #7
  8004ba2:	781b      	ldrb	r3, [r3, #0]
  8004ba4:	2b02      	cmp	r3, #2
  8004ba6:	d108      	bne.n	8004bba <VL53L8CX_SetPowerMode+0x5a>
-	{
-		if(vl53l8cx_set_power_mode(&Dev, VL53L8CX_POWER_MODE_DEEP_SLEEP))
+		if (vl53l8cx_set_power_mode(&Dev, VL53L8CX_POWER_MODE_DEEP_SLEEP))
  8004ba8:	4b06      	ldr	r3, [pc, #24]	; (8004bc4 <VL53L8CX_SetPowerMode+0x64>)
  8004baa:	2102      	movs	r1, #2
  8004bac:	0018      	movs	r0, r3
  8004bae:	f001 fd25 	bl	80065fc <vl53l8cx_set_power_mode>
  8004bb2:	1e03      	subs	r3, r0, #0
  8004bb4:	d001      	beq.n	8004bba <VL53L8CX_SetPowerMode+0x5a>
-				return VL53L8CX_ERR_PWR;
+			return VL53L8CX_ERR_PWR;
  8004bb6:	2305      	movs	r3, #5
  8004bb8:	e000      	b.n	8004bbc <VL53L8CX_SetPowerMode+0x5c>
 	}
@@ -13471,44 +13460,41 @@ VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr){
  * @param1: enum AUTONOMOUS or CONTINUOUS.
  * @return: (uint8_t) status : 0 if set ranging mode is OK.
  */
-VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang){
+VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang) {
  8004bc8:	b580      	push	{r7, lr}
  8004bca:	b082      	sub	sp, #8
  8004bcc:	af00      	add	r7, sp, #0
  8004bce:	0002      	movs	r2, r0
  8004bd0:	1dfb      	adds	r3, r7, #7
  8004bd2:	701a      	strb	r2, [r3, #0]
-	if(Rang == AUTONOMOUS)
+	if (Rang == AUTONOMOUS) {
  8004bd4:	1dfb      	adds	r3, r7, #7
  8004bd6:	781b      	ldrb	r3, [r3, #0]
  8004bd8:	2b00      	cmp	r3, #0
  8004bda:	d108      	bne.n	8004bee <VL53L8CX_SetRangingMode+0x26>
-	{
-		if(vl53l8cx_set_ranging_mode(&Dev, VL53L8CX_RANGING_MODE_AUTONOMOUS))
+		if (vl53l8cx_set_ranging_mode(&Dev, VL53L8CX_RANGING_MODE_AUTONOMOUS))
  8004bdc:	4b0d      	ldr	r3, [pc, #52]	; (8004c14 <VL53L8CX_SetRangingMode+0x4c>)
  8004bde:	2103      	movs	r1, #3
  8004be0:	0018      	movs	r0, r3
  8004be2:	f002 fd13 	bl	800760c <vl53l8cx_set_ranging_mode>
  8004be6:	1e03      	subs	r3, r0, #0
  8004be8:	d00e      	beq.n	8004c08 <VL53L8CX_SetRangingMode+0x40>
-				return VL53L8CX_ERR_Rang;
+			return VL53L8CX_ERR_Rang;
  8004bea:	2306      	movs	r3, #6
  8004bec:	e00d      	b.n	8004c0a <VL53L8CX_SetRangingMode+0x42>
-	}
-	else if(Rang == CONTINUOUS)
+	} else if (Rang == CONTINUOUS) {
  8004bee:	1dfb      	adds	r3, r7, #7
  8004bf0:	781b      	ldrb	r3, [r3, #0]
  8004bf2:	2b01      	cmp	r3, #1
  8004bf4:	d108      	bne.n	8004c08 <VL53L8CX_SetRangingMode+0x40>
-	{
-		if(vl53l8cx_set_ranging_mode(&Dev, VL53L8CX_RANGING_MODE_CONTINUOUS))
+		if (vl53l8cx_set_ranging_mode(&Dev, VL53L8CX_RANGING_MODE_CONTINUOUS))
  8004bf6:	4b07      	ldr	r3, [pc, #28]	; (8004c14 <VL53L8CX_SetRangingMode+0x4c>)
  8004bf8:	2101      	movs	r1, #1
  8004bfa:	0018      	movs	r0, r3
  8004bfc:	f002 fd06 	bl	800760c <vl53l8cx_set_ranging_mode>
  8004c00:	1e03      	subs	r3, r0, #0
  8004c02:	d001      	beq.n	8004c08 <VL53L8CX_SetRangingMode+0x40>
-				return VL53L8CX_ERR_Rang;
+			return VL53L8CX_ERR_Rang;
  8004c04:	2306      	movs	r3, #6
  8004c06:	e000      	b.n	8004c0a <VL53L8CX_SetRangingMode+0x42>
 	}
@@ -13524,33 +13510,33 @@ VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang){
  8004c14:	20000654 	.word	0x20000654
 
 08004c18 <VL53L8CX_StreamDistance>:
+ * @brief: This function streams an average ranging distance for a specific time in seconds.
  * @param1: int16_t *Distance_a : pointer for distance variable.
  * @param2: uint32_t Time_out : time of streaming.
  * @return: (uint8_t) status : 0 if start is OK.
  */
-VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
-{
+VL53L8CX_Status VL53L8CX_StreamDistance(int16_t *Distance_a, uint32_t Time_out) {
  8004c18:	b580      	push	{r7, lr}
  8004c1a:	b084      	sub	sp, #16
  8004c1c:	af00      	add	r7, sp, #0
  8004c1e:	6078      	str	r0, [r7, #4]
  8004c20:	6039      	str	r1, [r7, #0]
-	uint32_t startTime , end;
+	uint32_t startTime, end;
 
-	if(vl53l8cx_start_ranging(&Dev))
+	if (vl53l8cx_start_ranging(&Dev))
  8004c22:	4b2c      	ldr	r3, [pc, #176]	; (8004cd4 <VL53L8CX_StreamDistance+0xbc>)
  8004c24:	0018      	movs	r0, r3
  8004c26:	f001 fdf5 	bl	8006814 <vl53l8cx_start_ranging>
  8004c2a:	1e03      	subs	r3, r0, #0
  8004c2c:	d001      	beq.n	8004c32 <VL53L8CX_StreamDistance+0x1a>
-			return VL53L8CX_ERR_Rang;
+		return VL53L8CX_ERR_Rang;
  8004c2e:	2306      	movs	r3, #6
  8004c30:	e04c      	b.n	8004ccc <VL53L8CX_StreamDistance+0xb4>
-			elapsedTime = (end-startTime)/1000;
+			end = _TIME_MS();
+			elapsedTime = (end - startTime) / 1000;
 
 		}
-	}
-	else {
+	} else {
 		startTime = _TIME_MS();
  8004c32:	f7fc fc35 	bl	80014a0 <HAL_GetTick>
  8004c36:	0003      	movs	r3, r0
@@ -13559,7 +13545,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
  8004c3a:	f7fc fc31 	bl	80014a0 <HAL_GetTick>
  8004c3e:	0003      	movs	r3, r0
  8004c40:	60bb      	str	r3, [r7, #8]
-		elapsedTime = (end-startTime)/10;
+		elapsedTime = (end - startTime) / 10;
  8004c42:	68ba      	ldr	r2, [r7, #8]
  8004c44:	68fb      	ldr	r3, [r7, #12]
  8004c46:	1ad3      	subs	r3, r2, r3
@@ -13570,14 +13556,13 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
  8004c52:	001a      	movs	r2, r3
  8004c54:	4b20      	ldr	r3, [pc, #128]	; (8004cd8 <VL53L8CX_StreamDistance+0xc0>)
  8004c56:	601a      	str	r2, [r3, #0]
-		while(elapsedTime<Time_out)
+		while (elapsedTime < Time_out) {
  8004c58:	e02c      	b.n	8004cb4 <VL53L8CX_StreamDistance+0x9c>
-		{
 			get_data_by_polling(&Dev);
  8004c5a:	4b1e      	ldr	r3, [pc, #120]	; (8004cd4 <VL53L8CX_StreamDistance+0xbc>)
  8004c5c:	0018      	movs	r0, r3
  8004c5e:	f7ff fea1 	bl	80049a4 <get_data_by_polling>
-			*Distance_a = ((Results.distance_mm[5]+Results.distance_mm[6]+Results.distance_mm[9]+Results.distance_mm[10])/4);
+			*Distance_a = ((Results.distance_mm[5] + Results.distance_mm[6]
  8004c62:	4b1e      	ldr	r3, [pc, #120]	; (8004cdc <VL53L8CX_StreamDistance+0xc4>)
  8004c64:	4a1e      	ldr	r2, [pc, #120]	; (8004ce0 <VL53L8CX_StreamDistance+0xc8>)
  8004c66:	5e9b      	ldrsh	r3, [r3, r2]
@@ -13587,6 +13572,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
  8004c6e:	009b      	lsls	r3, r3, #2
  8004c70:	5ed3      	ldrsh	r3, [r2, r3]
  8004c72:	18cb      	adds	r3, r1, r3
+					+ Results.distance_mm[9] + Results.distance_mm[10]) / 4);
  8004c74:	4a19      	ldr	r2, [pc, #100]	; (8004cdc <VL53L8CX_StreamDistance+0xc4>)
  8004c76:	491b      	ldr	r1, [pc, #108]	; (8004ce4 <VL53L8CX_StreamDistance+0xcc>)
  8004c78:	5e52      	ldrsh	r2, [r2, r1]
@@ -13600,6 +13586,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
  8004c88:	da00      	bge.n	8004c8c <VL53L8CX_StreamDistance+0x74>
  8004c8a:	3303      	adds	r3, #3
  8004c8c:	109b      	asrs	r3, r3, #2
+			*Distance_a = ((Results.distance_mm[5] + Results.distance_mm[6]
  8004c8e:	b21a      	sxth	r2, r3
  8004c90:	687b      	ldr	r3, [r7, #4]
  8004c92:	801a      	strh	r2, [r3, #0]
@@ -13607,7 +13594,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
  8004c94:	f7fc fc04 	bl	80014a0 <HAL_GetTick>
  8004c98:	0003      	movs	r3, r0
  8004c9a:	60bb      	str	r3, [r7, #8]
-			elapsedTime = (end-startTime)/1000;
+			elapsedTime = (end - startTime) / 1000;
  8004c9c:	68ba      	ldr	r2, [r7, #8]
  8004c9e:	68fb      	ldr	r3, [r7, #12]
  8004ca0:	1ad3      	subs	r3, r2, r3
@@ -13619,7 +13606,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
  8004cae:	001a      	movs	r2, r3
  8004cb0:	4b09      	ldr	r3, [pc, #36]	; (8004cd8 <VL53L8CX_StreamDistance+0xc0>)
  8004cb2:	601a      	str	r2, [r3, #0]
-		while(elapsedTime<Time_out)
+		while (elapsedTime < Time_out) {
  8004cb4:	4b08      	ldr	r3, [pc, #32]	; (8004cd8 <VL53L8CX_StreamDistance+0xc0>)
  8004cb6:	681b      	ldr	r3, [r3, #0]
  8004cb8:	683a      	ldr	r2, [r7, #0]
@@ -13628,14 +13615,14 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out)
 		}
 
 	}
-	if(VL53L8CX_StopRanging())
+	if (VL53L8CX_StopRanging())
  8004cbe:	f7ff fee9 	bl	8004a94 <VL53L8CX_StopRanging>
  8004cc2:	1e03      	subs	r3, r0, #0
  8004cc4:	d001      	beq.n	8004cca <VL53L8CX_StreamDistance+0xb2>
-				return VL53L8CX_ERR_Rang;
+		return VL53L8CX_ERR_Rang;
  8004cc6:	2306      	movs	r3, #6
  8004cc8:	e000      	b.n	8004ccc <VL53L8CX_StreamDistance+0xb4>
-		return VL53L8CX_OK;
+	return VL53L8CX_OK;
  8004cca:	2300      	movs	r3, #0
 }
  8004ccc:	0018      	movs	r0, r3
@@ -14140,7 +14127,7 @@ uint8_t VL53L8CX_WrMulti(
  8004fa0:	f7ff fec3 	bl	8004d2a <ResetGPIOsPin>
 
 		//HAL_GPIO_WritePin(NCS_GPIO_Port, NCS_Pin, GPIO_PIN_RESET);
-		status |=  SendSPI(&hspi2, data_write, data_size);
+		status |=  SendSPI(VL53L8CX_SPI_HANDLER, data_write, data_size);
  8004fa4:	193b      	adds	r3, r7, r4
  8004fa6:	681b      	ldr	r3, [r3, #0]
  8004fa8:	b29a      	uxth	r2, r3

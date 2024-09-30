@@ -24,8 +24,10 @@ extern "C" {
 #include "vl53l8cx_plugin_detection_thresholds.h"
 #include "vl53l8cx_plugin_motion_indicator.h"
 #include "main.h"
+#include "Porting.h"
 
 /* Private macros ------------------------------------------------------------*/
+#define VL53L8CX_SPI_HANDLER    &hspi2
 
 #define SPI_I2C_N_Pin 			GPIO_PIN_4
 #define SPI_I2C_N_GPIO_Port 	GPIOA
@@ -45,7 +47,7 @@ extern "C" {
 #define LPn_Pin 				GPIO_PIN_8
 #define LPn_GPIO_Port 			GPIOA
 
-#define VL53L8CX_APIs_FREQUANCY		5U
+#define VL53L8CX_APIs_FREQUANCY		5U    /* 4x4 resolution max is 60 , 8x8 resolution max is 15 */
 #define LOW_MOTION_INDICATOR	((uint16_t) 500U)
 #define HIGH_MOTION_INDICATOR	((uint16_t) 1000U)
 
@@ -55,6 +57,7 @@ extern "C" {
 #define _TIME_MS()				HAL_GetTick()
 
 /* Exported types ------------------------------------------------------------*/
+/* typedef enumeration Definitions */
 typedef enum {
 	VL53L8CX_OK = 0,
 	VL53L8CX_ERR_INIT,
@@ -88,6 +91,7 @@ typedef enum
 	ZONES_8X8 = 0x01,
 }Resolution_e;
 
+/* typedef structure Definitions */
 typedef struct
 {
 	/* Internal sensor silicon temperature */
@@ -152,50 +156,19 @@ typedef struct
 	uint32_t motion[32];
 } VL53L8CX_APIs_motion_indicator;
 
-/* Exported functions  ---------------------------------------------*/
 
-VL53L8CX_Status VL53L8CX_Reset(void);
-
-VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t Freq);
-
-VL53L8CX_Status VL53L8CX_GetIntegrationTime(uint32_t* Integration_time_ms);
-
-VL53L8CX_Status VL53L8CX_SetIntegrationTime(uint32_t Integration_time_ms);
-
-VL53L8CX_Status VL53L8CX_SetSharpener(uint8_t Sharpener);
-
-VL53L8CX_Status VL53L8CX_GetSharpener(uint8_t* Sharpener);
-
-VL53L8CX_Status VL53L8CX_Detection_Thresholds(VL53L8CX_APIs_ResultsData* Data);
-
-VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* Data);
-
-VL53L8CX_Status VL53L8CX_StopRanging(void);
-
-/* Exported functions ---------------------------------------------*/
-
+/* User functions ---------------------------------------------*/
 VL53L8CX_Status VL53L8CX_Init(void);
-
 VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res);
-
 VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr);
-
 VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang);
-
 VL53L8CX_Status VL53L8CX_xTalkCalibration(void);
-
 VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance* Distance);
-
 VL53L8CX_Status VL53L8CX_SampleDistanceAverage(int16_t* Distance_a);
-
 VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out);
-
 VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets* NofTargets);
-
 VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator* Indicator);
-
 VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* Data);
-
 
 #endif /* VL53L8CX_APIs */
 /************************ (C) COPYRIGHT Hexabitz *****END OF FILE****/
