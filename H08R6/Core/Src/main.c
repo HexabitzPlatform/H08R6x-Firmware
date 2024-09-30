@@ -32,21 +32,15 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
-uint8_t sharpener;
+int16_t Distance_average;
 
-uint32_t integration_time_ms;
+VL53L8CX_APIs_ResultsData 	Data;
 
-uint8_t DataCalibrate[800];
+VL53L8CX_APIs_Distance 		Distance;
 
-VL53L8CX_APIs_ResultsData Data;
+VL53L8CX_APIs_NOfTargets 	Nb_target;
 
-VL53L8CX_APIs_Distance Distance;
-
-float distance_average;
-
-VL53L8CX_APIs_NOfTargets Nb_target;
-
-VL53L8CX_APIs_Indicator Indicator;
+VL53L8CX_APIs_Indicator 	Indicator;
 
 /* USER CODE END PTD */
 
@@ -128,15 +122,13 @@ int main(void)
 
   VL53L8CX_MotionIndicator(&Indicator);
 
-  VL53L8CX_SampleDistance(&Distance);*/
+  VL53L8CX_SampleDistance(&Distance);
 
-  VL53L8CX_SampleDistanceAverage(&distance_average);
+  VL53L8CX_SampleDistanceAverage(&Distance_average);*/
 
-  VL53L8CX_StreamDistance(&distance_average, 5);
+  VL53L8CX_StreamDistance(&Distance_average, 5);
 
-  /*VL53L8CX_NumberofTargets(&Nb_target);
-
-  VL53L8CX_StopRanging();*/
+ // VL53L8CX_NumberofTargets(&Nb_target);
 
   /* USER CODE END 2 */
 

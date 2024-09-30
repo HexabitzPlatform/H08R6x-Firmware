@@ -26,9 +26,33 @@ extern "C" {
 #include "main.h"
 
 /* Private macros ------------------------------------------------------------*/
+
+#define SPI_I2C_N_Pin 			GPIO_PIN_4
+#define SPI_I2C_N_GPIO_Port 	GPIOA
+#define SYNC_Pin 				GPIO_PIN_5
+#define SYNC_GPIO_Port 			GPIOA
+#define AVDD_EN_Pin 			GPIO_PIN_7
+#define AVDD_EN_GPIO_Port 		GPIOA
+#define CORE1_8_EN_Pin 			GPIO_PIN_0
+#define CORE1_8_EN_GPIO_Port 	GPIOB
+#define LED_Pin 				GPIO_PIN_1
+#define LED_GPIO_Port 			GPIOB
+#define NCS_Pin 				GPIO_PIN_12
+#define NCS_GPIO_Port 			GPIOB
+#define INT_Pin 				GPIO_PIN_14
+#define INT_GPIO_Port 			GPIOB
+#define INT_EXTI_IRQn 			EXTI4_15_IRQn
+#define LPn_Pin 				GPIO_PIN_8
+#define LPn_GPIO_Port 			GPIOA
+
 #define VL53L8CX_APIs_FREQUANCY		5U
 #define LOW_MOTION_INDICATOR	((uint16_t) 500U)
 #define HIGH_MOTION_INDICATOR	((uint16_t) 1000U)
+
+#define is_interrupt	 		0					/* 0 for polling mode and 1 for interrupt mode reading data*/
+
+#define _DELAY_MS(TimeOut)      HAL_Delay(TimeOut)
+#define _TIME_MS()				HAL_GetTick()
 
 /* Exported types ------------------------------------------------------------*/
 typedef enum {
@@ -60,8 +84,8 @@ typedef enum
 
 typedef enum
 {
-	RES_4_BY_4 = 0x00,
-	RES_8_BY_8 = 0x01,
+	ZONES_4X4 = 0x00,
+	ZONES_8X8 = 0x01,
 }Resolution_e;
 
 typedef struct
@@ -117,8 +141,6 @@ typedef struct
 	int16_t indicator[VL53L8CX_RESOLUTION_8X8];
 }VL53L8CX_APIs_Indicator;
 
-
-
 typedef struct
 {
 	uint32_t global_indicator_1;
@@ -134,49 +156,46 @@ typedef struct
 
 VL53L8CX_Status VL53L8CX_Reset(void);
 
-VL53L8CX_Status VL53L8CX_GetIntegrationTime(uint32_t* integration_time_ms);
+VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t Freq);
 
-VL53L8CX_Status VL53L8CX_SetIntegrationTime(uint32_t integration_time_ms);
+VL53L8CX_Status VL53L8CX_GetIntegrationTime(uint32_t* Integration_time_ms);
 
-VL53L8CX_Status VL53L8CX_SetSharpener(uint8_t sharpener);
+VL53L8CX_Status VL53L8CX_SetIntegrationTime(uint32_t Integration_time_ms);
 
-VL53L8CX_Status VL53L8CX_GetSharpener(uint8_t* sharpener);
+VL53L8CX_Status VL53L8CX_SetSharpener(uint8_t Sharpener);
 
-VL53L8CX_Status VL53L8CX_Calibration();
+VL53L8CX_Status VL53L8CX_GetSharpener(uint8_t* Sharpener);
 
-VL53L8CX_Status VL53L8CX_GetCalibrationData(uint8_t* pDataCalibrate);
+VL53L8CX_Status VL53L8CX_Detection_Thresholds(VL53L8CX_APIs_ResultsData* Data);
 
-VL53L8CX_Status VL53L8CX_SetCalibrationData(uint8_t* pDataCalibrate);
+VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* Data);
 
-VL53L8CX_Status VL53L8CX_Detection_Thresholds(VL53L8CX_APIs_ResultsData* data);
+VL53L8CX_Status VL53L8CX_StopRanging(void);
 
-VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData* data);
-
-/* Exported functions prototypes ---------------------------------------------*/
+/* Exported functions ---------------------------------------------*/
 
 VL53L8CX_Status VL53L8CX_Init(void);
 
-VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e res);
+VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res);
 
-VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e pwr);
+VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr);
 
-VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e rang);
+VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang);
 
-VL53L8CX_Status VL53L8CX_SetFrequancy(uint8_t freq);
-
-VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets* NofTargets);
+VL53L8CX_Status VL53L8CX_xTalkCalibration(void);
 
 VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance* Distance);
 
-VL53L8CX_Status VL53L8CX_SampleDistanceAverage(float* distance_a);
+VL53L8CX_Status VL53L8CX_SampleDistanceAverage(int16_t* Distance_a);
 
-VL53L8CX_Status VL53L8CX_StreamDistance(float* distance_a, double time_out);
+VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out);
+
+VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets* NofTargets);
 
 VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator* Indicator);
 
-VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* data);
+VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* Data);
 
-VL53L8CX_Status VL53L8CX_StopRanging(void);
 
 #endif /* VL53L8CX_APIs */
 /************************ (C) COPYRIGHT Hexabitz *****END OF FILE****/

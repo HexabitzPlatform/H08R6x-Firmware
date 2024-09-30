@@ -28,6 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g0xx_hal.h"
+#include "VL53L8CX_APIS.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -57,23 +58,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SPI_I2C_N_Pin GPIO_PIN_4
-#define SPI_I2C_N_GPIO_Port GPIOA
-#define SYNC_Pin GPIO_PIN_5
-#define SYNC_GPIO_Port GPIOA
-#define AVDD_EN_Pin GPIO_PIN_7
-#define AVDD_EN_GPIO_Port GPIOA
-#define CORE1_8_EN_Pin GPIO_PIN_0
-#define CORE1_8_EN_GPIO_Port GPIOB
-#define LED_Pin GPIO_PIN_1
-#define LED_GPIO_Port GPIOB
-#define NCS_Pin GPIO_PIN_12
-#define NCS_GPIO_Port GPIOB
-#define INT_Pin GPIO_PIN_14
-#define INT_GPIO_Port GPIOB
-#define INT_EXTI_IRQn EXTI4_15_IRQn
-#define LPn_Pin GPIO_PIN_8
-#define LPn_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
