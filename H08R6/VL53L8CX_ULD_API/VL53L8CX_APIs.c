@@ -240,7 +240,7 @@ VL53L8CX_Status VL53L8CX_Detection_Thresholds(VL53L8CX_APIs_ResultsData *Data) {
 	IntCount = 0;
 	status = vl53l8cx_start_ranging(&Dev);
 
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);
@@ -270,7 +270,7 @@ VL53L8CX_Status VL53L8CX_SYNCRanging(VL53L8CX_APIs_ResultsData *Data) {
 	vl53l8cx_set_external_sync_pin_enable(&Dev, 1);
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);
@@ -424,7 +424,7 @@ VL53L8CX_Status VL53L8CX_xTalkCalibration(void) {
 VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance *Distance) {
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);
@@ -447,7 +447,7 @@ VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance *Distance) {
 VL53L8CX_Status VL53L8CX_SampleDistanceAverage(int16_t *Distance_a) {
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);
@@ -474,7 +474,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t *Distance_a, uint32_t Time_out) 
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
 
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		startTime = _TIME_MS();
 		end = _TIME_MS();
 		elapsedTime = (end - startTime) / 10;
@@ -513,7 +513,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t *Distance_a, uint32_t Time_out) 
 VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets *NofTargets) {
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);
@@ -564,7 +564,7 @@ VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator *Indicator) {
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
 
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);
@@ -592,7 +592,7 @@ VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData *Data) {
 
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
-	if (is_interrupt) {
+	if (IS_INTERRUPT) {
 		get_data_by_interrupt(&Dev);
 	} else {
 		get_data_by_polling(&Dev);

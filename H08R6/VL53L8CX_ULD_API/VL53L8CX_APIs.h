@@ -51,7 +51,7 @@ extern "C" {
 #define LOW_MOTION_INDICATOR	((uint16_t) 500U)
 #define HIGH_MOTION_INDICATOR	((uint16_t) 1000U)
 
-#define is_interrupt	 		0					/* 0 for polling mode and 1 for interrupt mode reading data*/
+#define IS_INTERRUPT	 		0					/* 0 for polling mode and 1 for interrupt mode reading data*/
 
 #define _DELAY_MS(TimeOut)      HAL_Delay(TimeOut)
 #define _TIME_MS()				HAL_GetTick()
