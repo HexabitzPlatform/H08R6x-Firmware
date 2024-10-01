@@ -17,7 +17,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g0xx_hal.h"
 
-#define __N	2					// Number of array modules
+#define __N	1					// Number of array modules
 
 // Array modules
 #define _mod1	1<<3
@@ -25,8 +25,7 @@
 
 // Topology
 static uint16_t array[__N ][7] ={
-	{_H08R6, 0, 0,_mod2 | P3, 0, 0,0}, 								 // Module 1
-	{_H0BR4,0, 0, _mod1 | P3, 0, 0, 0},					    			 // Module 2
+	{_H08R6, 0, 0,0, 0, 0,0} 								 // Module 1
 };
 
 // Configurations for duplex serial ports
