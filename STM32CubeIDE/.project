@@ -184,6 +184,16 @@
 			<locationURI>PARENT-1-PROJECT_LOC/H08R6/H08R6_rtc.c</locationURI>
 		</link>
 		<link>
+			<name>H08R6/H08R6_spi.c</name>
+			<type>1</type>
+			<location>C:/Users/Control/Documents/H08R6x-Firmware/H08R6/H08R6_spi.c</location>
+		</link>
+		<link>
+			<name>H08R6/H08R6_spi.h</name>
+			<type>1</type>
+			<location>C:/Users/Control/Documents/H08R6x-Firmware/H08R6/H08R6_spi.h</location>
+		</link>
+		<link>
 			<name>H08R6/H08R6_timers.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/H08R6/H08R6_timers.c</locationURI>
@@ -232,6 +242,11 @@
 			<name>Thirdparty/STM32G0xx_HAL_Driver</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>Thirdparty/VL53L8CX_ULD_API</name>
+			<type>2</type>
+			<location>C:/Users/Control/Documents/H08R6x-Firmware/VL53L8CX_ULD_API</location>
 		</link>
 		<link>
 			<name>User/main.c</name>

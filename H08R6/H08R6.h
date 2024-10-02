@@ -19,6 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"
+#include "VL53L8CX_APIs.h"
 #include "H08R6_MemoryMap.h"
 #include "H08R6_uart.h"
 #include "H08R6_gpio.h"
@@ -26,13 +27,13 @@
 #include "H08R6_inputs.h"
 #include "H08R6_eeprom.h"
 
+
 /* Exported definitions -------------------------------------------------------*/
 
 #define	modulePN		_H08R6
 
 
-/* Port-related definitions */
-#define	NumOfPorts			6
+
 
 #define P_PROG 				P2						/* ST factory bootloader UART */
 
@@ -100,10 +101,14 @@
 /* Module-specific Definitions */
 
 /* Indicator LED */
-#define _IND_LED_PORT		 GPIOB
-#define _IND_LED_PIN		 GPIO_PIN_1
+#define _IND_LED_PORT		GPIOB
+#define _IND_LED_PIN		GPIO_PIN_1
 
-#define NUM_MODULE_PARAMS	 1
+#define NUM_MODULE_PARAMS	1
+#define MIN_MEMS_PERIOD_MS	100
+#define MAX_MEMS_TIMEOUT_MS	0xFFFFFFFF
+
+#define MIN_PERIOD_MS		100
 
 /* Module GPIO Pinout */
 
@@ -131,11 +136,20 @@
 typedef enum {
 	H08R6_OK =0,
 	H08R6_ERR_WrongMode,
+	H08R6_ERR_WrongParams,
+	H08R6_ERR_TERMINATED,
 	H08R6_ERROR =255
 } Module_Status;
 
 /* Export Module typedef structure */
+/* Choose the functionality of stream and sample APIs */
+typedef enum {
+	AVERAGE =0, ALL,
+} All_Data;
 
+/* Indicator LED */
+#define _IND_LED_PORT			GPIOB
+#define _IND_LED_PIN			GPIO_PIN_1
 
 /* Export UART variables */
 extern UART_HandleTypeDef huart1;
@@ -161,7 +175,14 @@ extern void ExecuteMonitor(void);
  |								  APIs							          |  																 	|
 /* -----------------------------------------------------------------------
  */
+//Module_Status SampleDistance(VL53L8CX_APIs_Distance *Distance);
+Module_Status SampleDistanceAverage(int16_t *Distance_average);
+//Module_Status SampleAllData(VL53L8CX_APIs_ResultsData *Data);
 
+Module_Status SampletoPort(uint8_t module,uint8_t port,All_Data function);
+Module_Status StreamtoPort(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
+Module_Status StreamToTerminal(uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
+Module_Status StreamToBuffer(int16_t *buffer,All_Data function, uint32_t Numofsamples, uint32_t timeout);
 
 void SetupPortForRemoteBootloaderUpdate(uint8_t port);
 void remoteBootloaderUpdate(uint8_t src,uint8_t dst,uint8_t inport,uint8_t outport);
