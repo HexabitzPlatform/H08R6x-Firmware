@@ -138,6 +138,7 @@ typedef enum {
 	H08R6_ERR_WrongMode,
 	H08R6_ERR_WrongParams,
 	H08R6_ERR_TERMINATED,
+	H08R6_ERR_UnknownMessage,
 	H08R6_ERROR =255
 } Module_Status;
 
@@ -175,10 +176,7 @@ extern void ExecuteMonitor(void);
  |								  APIs							          |  																 	|
 /* -----------------------------------------------------------------------
  */
-//Module_Status SampleDistance(VL53L8CX_APIs_Distance *Distance);
 Module_Status SampleDistanceAverage(int16_t *Distance_average);
-//Module_Status SampleAllData(VL53L8CX_APIs_ResultsData *Data);
-
 Module_Status SampletoPort(uint8_t module,uint8_t port,All_Data function);
 Module_Status StreamtoPort(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToTerminal(uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);

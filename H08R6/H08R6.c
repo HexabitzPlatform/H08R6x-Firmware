@@ -41,6 +41,9 @@ uint32_t numofsamples[2], Timeout[2];
 uint8_t Port[2], Module[2], mode[2];
 uint8_t tofMode;
 
+uint8_t StopeCliStreamFlag;
+
+typedef void (*SampleToString)(char*,size_t);
 typedef void (*SampleMemsToBuffer)(int16_t *buffer);
 
 /* Exported variables */
@@ -49,6 +52,9 @@ extern uint8_t numOfRecordedSnippets;
 
 /* Local functions */
 static Module_Status PollingSleepCLISafe(uint32_t period, long Numofsamples);
+static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleToString function);
+
+
 Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function);
 Module_Status Exportstreamtoport(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status Exportstreamtoterminal(uint8_t Port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
@@ -70,7 +76,14 @@ void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr);
 
 /* Create CLI commands --------------------------------------------------------*/
-
+static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
+/* CLI command structure : sample */
+const CLI_Command_Definition_t SampleCommandDefinition = {
+	(const int8_t *) "sample",
+	(const int8_t *) "sample:\r\n Syntax: sample [Average].\r\n\r\n",
+	SampleSensorCommand,
+	1
+};
 /* CLI command structure : demo */
 
 /*-----------------------------------------------------------*/
@@ -388,9 +401,20 @@ void Module_Peripheral_Init(void) {
  */
 Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src,
 		uint8_t dst, uint8_t shift) {
-	Module_Status result = H08R6_OK;
+	Module_Status result =H08R6_OK;
+		uint32_t period =0, timeout =0;
 
-	return result;
+		switch(code){
+			case CODE_H08R6_SAMPLE_PORT: {
+				Exporttoport(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],AVERAGE);
+				break;
+			}
+			default:
+				result =H08R6_ERR_UnknownMessage;
+				break;
+		}
+
+		return result;
 }
 /* --- Get the port for a given UART. 
  */
@@ -415,6 +439,8 @@ uint8_t GetPort(UART_HandleTypeDef *huart) {
 /* --- Register this module CLI Commands
  */
 void RegisterModuleCLICommands(void) {
+
+	FreeRTOS_CLIRegisterCommand( &SampleCommandDefinition );
 
 }
 
@@ -480,8 +506,47 @@ static Module_Status PollingSleepCLISafe(uint32_t period,long Numofsamples){
 	vTaskDelay(pdMS_TO_TICKS(lastDelayMS));
 	return H08R6_OK;
 }
- /*-----------------------------------------------------------*/
 
+ /*-----------------------------------------------------------*/
+/*-----------------------------------------------------------*/
+static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleToString function){
+	Module_Status status =H08R6_OK;
+	int8_t *pcOutputString = NULL;
+	uint32_t period =timeout / Numofsamples;
+	if(period < MIN_MEMS_PERIOD_MS)
+		return H08R6_ERR_WrongParams;
+
+	// TODO: Check if CLI is enable or not
+	for(uint8_t chr =0; chr < MSG_RX_BUF_SIZE; chr++){
+		if(UARTRxBuf[PcPort - 1][chr] == '\r'){
+			UARTRxBuf[PcPort - 1][chr] =0;
+		}
+	}
+	if(1 == StopeCliStreamFlag){
+		StopeCliStreamFlag =0;
+		static char *pcOKMessage =(int8_t* )"Stop stream !\n\r";
+		writePxITMutex(PcPort,pcOKMessage,strlen(pcOKMessage),10);
+		return status;
+	}
+	if(period > timeout)
+		timeout =period;
+
+	long numTimes =timeout / period;
+	stopStream = false;
+
+	while((numTimes-- > 0) || (timeout >= MAX_MEMS_TIMEOUT_MS)){
+		pcOutputString =FreeRTOS_CLIGetOutputBuffer();
+		function((char* )pcOutputString,100);
+
+		writePxMutex(PcPort,(char* )pcOutputString,strlen((char* )pcOutputString),cmd500ms,HAL_MAX_DELAY);
+		if(PollingSleepCLISafe(period,Numofsamples) != H08R6_OK)
+			break;
+	}
+
+	memset((char* )pcOutputString,0,configCOMMAND_INT_MAX_OUTPUT_SIZE);
+	sprintf((char* )pcOutputString,"\r\n");
+	return status;
+}
 /*-----------------------------------------------------------*/
 
 
@@ -723,7 +788,84 @@ Module_Status StreamToBuffer(int16_t *buffer,All_Data function,uint32_t Numofsam
  |								Commands							      |
  -----------------------------------------------------------------------
  */
+static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString)
+{
+	const char *const AvrCmdName = "avr";
 
+
+
+	const char *pSensName = NULL;
+	portBASE_TYPE sensNameLen = 0;
+
+	// Make sure we return something
+	*pcWriteBuffer = '\0';
+
+	pSensName = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 1, &sensNameLen);
+
+	if (pSensName == NULL) {
+		snprintf((char *)pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
+		return pdFALSE;
+	}
+
+	do {
+		if (!strncmp(pSensName, AvrCmdName, strlen(AvrCmdName))) {
+			Exportstreamtoterminal(PcPort,AVERAGE,1,500);
+
+		}
+		else {
+			snprintf((char *)pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
+		}
+
+		return pdFALSE;
+	} while (0);
+
+	snprintf((char *)pcWriteBuffer, xWriteBufferLen, "Error reading Sensor\r\n");
+	return pdFALSE;
+}
+/*-----------------------------------------------------------*/
+// Port Mode => false and CLI Mode => true
+static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSensName, portBASE_TYPE *pSensNameLen,
+														bool *pPortOrCLI, uint32_t *pPeriod, uint32_t *pTimeout, uint8_t *pPort, uint8_t *pModule)
+{
+	const char *pPeriodMSStr = NULL;
+	const char *pTimeoutMSStr = NULL;
+
+	portBASE_TYPE periodStrLen = 0;
+	portBASE_TYPE timeoutStrLen = 0;
+
+	const char *pPortStr = NULL;
+	const char *pModStr = NULL;
+
+	portBASE_TYPE portStrLen = 0;
+	portBASE_TYPE modStrLen = 0;
+
+	*ppSensName = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 1, pSensNameLen);
+	pPeriodMSStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 2, &periodStrLen);
+	pTimeoutMSStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 3, &timeoutStrLen);
+
+	// At least 3 Parameters are required!
+	if ((*ppSensName == NULL) || (pPeriodMSStr == NULL) || (pTimeoutMSStr == NULL))
+		return false;
+
+	// TODO: Check if Period and Timeout are integers or not!
+	*pPeriod = atoi(pPeriodMSStr);
+	*pTimeout = atoi(pTimeoutMSStr);
+	*pPortOrCLI = true;
+
+	pPortStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 4, &portStrLen);
+	pModStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 5, &modStrLen);
+
+	if ((pModStr == NULL) && (pPortStr == NULL))
+		return true;
+	if ((pModStr == NULL) || (pPortStr == NULL))	// If user has provided 4 Arguments.
+		return false;
+
+	*pPort = atoi(pPortStr);
+	*pModule = atoi(pModStr);
+	*pPortOrCLI = false;
+
+	return true;
+}
 /*-----------------------------------------------------------*/
 
 /*-----------------------------------------------------------*/

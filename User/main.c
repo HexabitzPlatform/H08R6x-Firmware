@@ -8,6 +8,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"
 
+int16_t distance;
+
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -28,8 +30,12 @@ int main(void) {
 /* User Task */
 void UserTask(void *argument) {
 
+	StreamToTerminal(2, AVERAGE, 10, 20000);
+
 	// put your code here, to run repeatedly.
 	while (1) {
+
+
 
 	}
 }
