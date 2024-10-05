@@ -23,6 +23,7 @@
 #include "H08R6_MemoryMap.h"
 #include "H08R6_uart.h"
 #include "H08R6_gpio.h"
+#include "H08R6_spi.h"
 #include "H08R6_dma.h"
 #include "H08R6_inputs.h"
 #include "H08R6_eeprom.h"
@@ -32,8 +33,7 @@
 
 #define	modulePN		_H08R6
 
-
-
+#define	NumOfPorts			6
 
 #define P_PROG 				P2						/* ST factory bootloader UART */
 
