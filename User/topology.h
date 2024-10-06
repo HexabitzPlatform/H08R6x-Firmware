@@ -23,10 +23,11 @@
 #define _mod1	1<<3
 #define _mod2	2<<3
 
+
 // Topology
 static uint16_t array[__N ][7] ={
-	{_H08R6, 0, 0,0, 0, 0,0},
-	{_H0BR4, _mod1 | P1, 0, 0, 0, 0, 0},// Module 1
+		{_H08R6, 0, 0, _mod2 | P3, 0, 0,0}, 								 // Module 1
+		{_H0BR4, 0, 0,_mod1 | P3, 0, 0, 0},					    			 // Module 2
 };
 
 // Configurations for duplex serial ports

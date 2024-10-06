@@ -17,15 +17,21 @@
 #include "BOS.h"
 #include "H08R6_inputs.h"
 #include "VL53L8CX_APIs.h"
+#include <math.h>
 
-
-
+/* Define UART variables */
+UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart3;
+UART_HandleTypeDef huart4;
+UART_HandleTypeDef huart5;
+UART_HandleTypeDef huart6;
 /* Exported variables */
-extern FLASH_ProcessTypeDef pFlash;
+//extern FLASH_ProcessTypeDef pFlash;
 extern uint8_t numOfRecordedSnippets;
 
 /* Driver variables */
-int16_t Distance_average;
+// int16_t average;
 
 VL53L8CX_APIs_ResultsData 	Data;
 
@@ -47,17 +53,12 @@ TaskHandle_t TOFTaskHandle = NULL;
 static bool stopStream = false;
 uint8_t StopeCliStreamFlag;
 
-/* Module exported parameters ------------------------------------------------*/
-module_param_t modParam[NUM_MODULE_PARAMS] = { { .paramPtr = NULL,
-		.paramFormat = FMT_FLOAT, .paramName = "" } };
+int16_t H08R6_average = 0;
 
-/* Define UART variables */
-UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
-UART_HandleTypeDef huart3;
-UART_HandleTypeDef huart4;
-UART_HandleTypeDef huart5;
-UART_HandleTypeDef huart6;
+/* Module exported parameters ------------------------------------------------*/
+module_param_t modParam[NUM_MODULE_PARAMS] = { { .paramPtr = &H08R6_average, .paramFormat = FMT_INT16, .paramName = "average" } };
+
+
 
 
 typedef void (*SampleToString)(char*,size_t);
@@ -401,7 +402,7 @@ void Module_Peripheral_Init(void) {
 
 
 	/* Create module special task (if needed) */
-	xTaskCreate(TOFTaskHandle,(const char* )"TOFTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&TOFTaskHandle);
+	xTaskCreate(TOFTask,(const char* )"TOFTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&TOFTaskHandle);
 
 
 }
@@ -415,7 +416,7 @@ Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src,
 		uint32_t period =0, timeout =0;
 
 		switch(code){
-			case CODE_H08R6_SAMPLE_PORT: {
+			case CODE_H08R7_SAMPLE_PORT: {
 				Exporttoport(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],AVERAGE);
 				break;
 			}
@@ -509,7 +510,8 @@ static Module_Status StreamMemsToBuf(int16_t *Buffer, uint32_t Numofsamples,uint
 
 /*-----------------------------------------------------------*/
 void SampleAverageBuf(int16_t *buffer){
-	SampleDistanceAverage(&Distance_average);
+	int16_t average_1;
+	SampleDistanceAverage(&average_1);
 //	buffer = Distance_average;
 }
 /*-----------------------------------------------------------*/
@@ -557,6 +559,7 @@ Module_Status Exportstreamtoterminal(uint8_t Port,All_Data function,uint32_t Num
 	Module_Status status = H08R6_OK;
 	int8_t *pcOutputString = NULL;
 	char cstring[100];
+	int16_t average_d;
 	uint32_t period = timeout / Numofsamples;
 	if (period < MIN_MEMS_PERIOD_MS)
 		return H08R6_ERR_WrongMode;
@@ -571,10 +574,10 @@ Module_Status Exportstreamtoterminal(uint8_t Port,All_Data function,uint32_t Num
 
 		while ((Numofsamples-- > 0) || (timeout >= MAX_MEMS_TIMEOUT_MS)) {
 			pcOutputString = FreeRTOS_CLIGetOutputBuffer();
-			if ((status = SampleDistanceAverage(&Distance_average)) != H08R6_OK)
+			if ((status = SampleDistanceAverage(&average_d)) != H08R6_OK)
 				return status;
 
-			snprintf(cstring, 50, "Distance (mm) | %d\r\n", Distance_average);
+			snprintf(cstring, 50, "Distance (mm) | %d\r\n", average_d);
 
 			writePxMutex(Port, (char*) cstring, strlen((char*) cstring),
 			cmd500ms, HAL_MAX_DELAY);
@@ -642,19 +645,19 @@ Module_Status Exportstreamtoport(uint8_t module,uint8_t port,All_Data function,u
 /*-----------------------------------------------------------*/
 Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
 
-	int16_t Distance_average;
+	int16_t average;
 	static uint8_t temp[4] = { 0 };
 	Module_Status status = H08R6_OK;
 
 	switch (function) {
 	case AVERAGE:
 
-		if ((status = SampleDistanceAverage(&Distance_average)) != H08R6_OK)
+		if ((status = SampleDistanceAverage(&average)) != H08R6_OK)
 			return status = H08R6_ERROR;
 
 		if (module == myID || module == 0) {
-			temp[0] = (uint8_t) ((*(uint32_t*) &Distance_average) >> 0);
-			temp[1] = (uint8_t) ((*(uint32_t*) &Distance_average) >> 8);
+			temp[0] = (uint8_t) ((*(uint32_t*) &average) >> 0);
+			temp[1] = (uint8_t) ((*(uint32_t*) &average) >> 8);
 			writePxITMutex(port, (char*) &temp[0], 2 * sizeof(uint8_t), 10);
 		} else {
 			if (H08R6_OK == status)
@@ -664,9 +667,9 @@ Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
 			messageParams[0] = FMT_UINT16;
 			messageParams[2] = 1;
 			messageParams[3] =
-					(uint8_t) ((*(uint32_t*) &Distance_average) >> 0);
+					(uint8_t) ((*(uint32_t*) &average) >> 0);
 			messageParams[4] =
-					(uint8_t) ((*(uint32_t*) &Distance_average) >> 8);
+					(uint8_t) ((*(uint32_t*) &average) >> 8);
 			SendMessageToModule(module, CODE_READ_RESPONSE,
 					2 * sizeof(uint8_t) + 3);
 		}
@@ -687,13 +690,13 @@ Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
 
 /*-----------------------------------------------------------*/
 
-Module_Status SampleDistanceAverage(int16_t *Distance_average) {
+Module_Status SampleDistanceAverage(int16_t *average) {
 	Module_Status status = H08R6_OK;
 
 	VL53L8CX_Init();
 
 
-	if ((status = VL53L8CX_SampleDistanceAverage(Distance_average)) != H08R6_OK)
+	if ((status = VL53L8CX_SampleDistanceAverage(average)) != H08R6_OK)
 		return status = H08R6_ERROR;
 
 	return status;

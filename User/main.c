@@ -29,11 +29,17 @@ int main(void) {
 
 /* User Task */
 void UserTask(void *argument) {
+	uint8_t c = 0;
+	c = c + 1;
+	c = 15;
 
-	StreamToTerminal(2, AVERAGE, 10, 20000);
+	//StreamToTerminal(2, AVERAGE, 10, 20000);
 
 	// put your code here, to run repeatedly.
 	while (1) {
+
+		SampleDistanceAverage(&distance);
+
 
 
 

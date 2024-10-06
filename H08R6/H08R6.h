@@ -29,6 +29,7 @@
 #include "H08R6_eeprom.h"
 
 
+
 /* Exported definitions -------------------------------------------------------*/
 
 #define	modulePN		_H08R6
@@ -104,22 +105,13 @@
 #define _IND_LED_PORT		GPIOB
 #define _IND_LED_PIN		GPIO_PIN_1
 
-#define NUM_MODULE_PARAMS	1
+
 #define MIN_MEMS_PERIOD_MS	100
 #define MAX_MEMS_TIMEOUT_MS	0xFFFFFFFF
+#define NUM_MODULE_PARAMS	1
 
 #define MIN_PERIOD_MS		100
-
-/* Module GPIO Pinout */
-
-
-/* Module Special I2C */
-
-
-
 /* Module special parameters */
-
-
 #define SAMPLE_TO_PORT          1
 #define STREAM_TO_PORT          2
 #define STREAM_TO_Terminal      3
@@ -182,9 +174,9 @@ Module_Status StreamtoPort(uint8_t module,uint8_t port,All_Data function,uint32_
 Module_Status StreamToTerminal(uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToBuffer(int16_t *buffer,All_Data function, uint32_t Numofsamples, uint32_t timeout);
 
+
 void SetupPortForRemoteBootloaderUpdate(uint8_t port);
 void remoteBootloaderUpdate(uint8_t src,uint8_t dst,uint8_t inport,uint8_t outport);
-
 
 /* -----------------------------------------------------------------------
  |								Commands							      |															 	|
