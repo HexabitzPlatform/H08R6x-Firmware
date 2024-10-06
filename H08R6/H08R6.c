@@ -16,6 +16,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"
 #include "H08R6_inputs.h"
+#include "VL53L8CX_APIs.h"
+
+
+
+/* Exported variables */
+extern FLASH_ProcessTypeDef pFlash;
+extern uint8_t numOfRecordedSnippets;
 
 /* Driver variables */
 int16_t Distance_average;
@@ -28,6 +35,22 @@ VL53L8CX_APIs_NOfTargets 	Nb_target;
 
 VL53L8CX_APIs_Indicator 	Indicator;
 
+
+
+/* variables for Streams ----------------------------------------------------*/
+uint32_t numofsamples[2], Timeout[2];
+uint8_t Port[2], Module[2], mode[2];
+uint8_t tofMode;
+
+/* Private variables ---------------------------------------------------------*/
+TaskHandle_t TOFTaskHandle = NULL;
+static bool stopStream = false;
+uint8_t StopeCliStreamFlag;
+
+/* Module exported parameters ------------------------------------------------*/
+module_param_t modParam[NUM_MODULE_PARAMS] = { { .paramPtr = NULL,
+		.paramFormat = FMT_FLOAT, .paramName = "" } };
+
 /* Define UART variables */
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -36,47 +59,32 @@ UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart6;
 
-/* variables for Streams ----------------------------------------------------*/
-uint32_t numofsamples[2], Timeout[2];
-uint8_t Port[2], Module[2], mode[2];
-uint8_t tofMode;
-
-uint8_t StopeCliStreamFlag;
 
 typedef void (*SampleToString)(char*,size_t);
 typedef void (*SampleMemsToBuffer)(int16_t *buffer);
 
-/* Exported variables */
-extern FLASH_ProcessTypeDef pFlash;
-extern uint8_t numOfRecordedSnippets;
+/* Private function prototypes -----------------------------------------------*/
+void TOFTask(void *argument);
+
+Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function);
+Module_Status Exportstreamtoport(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
+Module_Status Exportstreamtoterminal(uint8_t Port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 
 /* Local functions */
 static Module_Status PollingSleepCLISafe(uint32_t period, long Numofsamples);
 static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleToString function);
 
-
-Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function);
-Module_Status Exportstreamtoport(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
-Module_Status Exportstreamtoterminal(uint8_t Port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 static Module_Status StreamMemsToBuf(int16_t *Buffer, uint32_t Numofsamples,uint32_t timeout,SampleMemsToBuffer function);
 void SampleAverageBuf(int16_t *buffer);
 
-/* Module exported parameters ------------------------------------------------*/
-module_param_t modParam[NUM_MODULE_PARAMS] = { { .paramPtr = NULL,
-		.paramFormat = FMT_FLOAT, .paramName = "" } };
-
-/* Private variables ---------------------------------------------------------*/
-TaskHandle_t TOFTaskHandle = NULL;
-static bool stopStream = false;
-uint8_t StopCliStreamFlag;
-/* Private function prototypes -----------------------------------------------*/
-
-void TOFTask(void *argument);
-void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr);
+void ExecuteMonitor(void);
+
 
 /* Create CLI commands --------------------------------------------------------*/
 static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
+
+
 /* CLI command structure : sample */
 const CLI_Command_Definition_t SampleCommandDefinition = {
 	(const int8_t *) "sample",
@@ -372,6 +380,7 @@ void Module_Peripheral_Init(void) {
 	MX_USART6_UART_Init();
 	MX_GPIO_Init();
 
+
 	//Circulating DMA Channels ON All Module
 	for (int i = 1; i <= NumOfPorts; i++) {
 		if (GetUart(i) == &huart1) {
@@ -389,10 +398,11 @@ void Module_Peripheral_Init(void) {
 		}
 	}
 
+
+
 	/* Create module special task (if needed) */
-	if (TOFTaskHandle == NULL)
-		xTaskCreate(TOFTask, (const char*) "TOFTask", configMINIMAL_STACK_SIZE,
-		NULL, osPriorityNormal - osPriorityIdle, &TOFTaskHandle);
+	xTaskCreate(TOFTaskHandle,(const char* )"TOFTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&TOFTaskHandle);
+
 
 }
 
@@ -416,6 +426,15 @@ Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src,
 
 		return result;
 }
+
+/* --- Register this module CLI Commands
+ */
+void RegisterModuleCLICommands(void) {
+
+	FreeRTOS_CLIRegisterCommand( &SampleCommandDefinition );
+
+}
+
 /* --- Get the port for a given UART. 
  */
 uint8_t GetPort(UART_HandleTypeDef *huart) {
@@ -436,22 +455,6 @@ uint8_t GetPort(UART_HandleTypeDef *huart) {
 	return 0;
 }
 
-/* --- Register this module CLI Commands
- */
-void RegisterModuleCLICommands(void) {
-
-	FreeRTOS_CLIRegisterCommand( &SampleCommandDefinition );
-
-}
-
-/*-----------------------------------------------------------*/
-void SampleAverageBuf(int16_t *buffer){
-	SampleDistanceAverage(&Distance_average);
-	buffer = Distance_average;
-}
-
-/*-----------------------------------------------------------*/
-
 /* Module special task function (if needed) */
 void TOFTask(void *argument) {
 
@@ -471,43 +474,44 @@ void TOFTask(void *argument) {
 }
 
 /*-----------------------------------------------------------*/
+static Module_Status StreamMemsToBuf(int16_t *Buffer, uint32_t Numofsamples,uint32_t timeout,SampleMemsToBuffer function){
 
-/*-----------------------------------------------------------*/
+	Module_Status status = H08R6_OK;
+	int16_t buffer;
+	uint8_t coun;
+	uint32_t period = timeout / Numofsamples;
 
-/*-----------------------------------------------------------*/
+	if (period < MIN_MEMS_PERIOD_MS)
+		return H08R6_ERR_WrongParams;
 
-/*-----------------------------------------------------------*/
+	// TODO: Check if CLI is enable or not
 
-/* -----------------------------------------------------------------------
- |								  Local Function                          |
- /* -----------------------------------------------------------------------
-/*-----------------------------------------------------------*/
-static Module_Status PollingSleepCLISafe(uint32_t period,long Numofsamples){
-	const unsigned DELTA_SLEEP_MS =100; // milliseconds
-	long numDeltaDelay =period / DELTA_SLEEP_MS;
-	unsigned lastDelayMS =period % DELTA_SLEEP_MS;
+	if (period > timeout)
+		timeout = period;
 
-	while(numDeltaDelay-- > 0){
-		vTaskDelay(pdMS_TO_TICKS(DELTA_SLEEP_MS));
+	long numTimes = timeout / period;
+	stopStream = false;
 
-		// Look for ENTER key to stop the stream
-		for(uint8_t chr =1; chr < MSG_RX_BUF_SIZE; chr++){
-			if(UARTRxBuf[PcPort - 1][chr] == '\r'){
-				UARTRxBuf[PcPort - 1][chr] =0;
-				StopCliStreamFlag = 1;
-				return H08R6_ERR_TERMINATED;
-			}
+	while ((numTimes-- > 0) || (timeout >= MAX_MEMS_TIMEOUT_MS)) {
+		function(&buffer);
+		Buffer[coun] = buffer;
+		coun++;
+		vTaskDelay(pdMS_TO_TICKS(period));
+		if (stopStream) {
+			status = H08R6_ERR_TERMINATED;
+			break;
 		}
-
-		if(stopStream)
-			return H08R6_ERR_TERMINATED;
 	}
+	return status;
 
-	vTaskDelay(pdMS_TO_TICKS(lastDelayMS));
-	return H08R6_OK;
+
 }
 
- /*-----------------------------------------------------------*/
+/*-----------------------------------------------------------*/
+void SampleAverageBuf(int16_t *buffer){
+	SampleDistanceAverage(&Distance_average);
+//	buffer = Distance_average;
+}
 /*-----------------------------------------------------------*/
 static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleToString function){
 	Module_Status status =H08R6_OK;
@@ -545,69 +549,6 @@ static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleTo
 
 	memset((char* )pcOutputString,0,configCOMMAND_INT_MAX_OUTPUT_SIZE);
 	sprintf((char* )pcOutputString,"\r\n");
-	return status;
-}
-/*-----------------------------------------------------------*/
-
-
-/*-----------------------------------------------------------*/
-Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
-
-	int16_t Distance_average;
-	static uint8_t temp[4] = { 0 };
-	Module_Status status = H08R6_OK;
-
-	switch (function) {
-	case AVERAGE:
-
-		if ((status = SampleDistanceAverage(&Distance_average)) != H08R6_OK)
-			return status = H08R6_ERROR;
-
-		if (module == myID || module == 0) {
-			temp[0] = (uint8_t) ((*(uint32_t*) &Distance_average) >> 0);
-			temp[1] = (uint8_t) ((*(uint32_t*) &Distance_average) >> 8);
-			writePxITMutex(port, (char*) &temp[0], 2 * sizeof(uint8_t), 10);
-		} else {
-			if (H08R6_OK == status)
-				messageParams[1] = BOS_OK;
-			else
-				messageParams[1] = BOS_ERROR;
-			messageParams[0] = FMT_UINT16;
-			messageParams[2] = 1;
-			messageParams[3] =
-					(uint8_t) ((*(uint32_t*) &Distance_average) >> 0);
-			messageParams[4] =
-					(uint8_t) ((*(uint32_t*) &Distance_average) >> 8);
-			SendMessageToModule(module, CODE_READ_RESPONSE,
-					2 * sizeof(uint8_t) + 3);
-		}
-		break;
-	default:
-		status = H08R6_ERR_WrongParams;
-		break;
-	}
-
-
-	return status;
-}
-/*-----------------------------------------------------------*/
-
-Module_Status Exportstreamtoport(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout){
-	Module_Status status =H08R6_OK;
-	uint32_t samples =0;
-	uint32_t period =0;
-	period =timeout / Numofsamples;
-
-	if(timeout < MIN_PERIOD_MS || period < MIN_PERIOD_MS)
-		return H08R6_ERR_WrongParams;
-
-	while(samples < Numofsamples){
-		status =Exporttoport(module,port,function);
-		vTaskDelay(pdMS_TO_TICKS(period));
-		samples++;
-	}
-	tofMode = DEFAULT;
-
 	return status;
 }
 /*-----------------------------------------------------------*/
@@ -650,38 +591,93 @@ Module_Status Exportstreamtoterminal(uint8_t Port,All_Data function,uint32_t Num
 	tofMode = DEFAULT;
 	return status;
 }
+
+
 /*-----------------------------------------------------------*/
-static Module_Status StreamMemsToBuf(int16_t *Buffer, uint32_t Numofsamples,uint32_t timeout,SampleMemsToBuffer function){
+static Module_Status PollingSleepCLISafe(uint32_t period,long Numofsamples){
+	const unsigned DELTA_SLEEP_MS =100; // milliseconds
+	long numDeltaDelay =period / DELTA_SLEEP_MS;
+	unsigned lastDelayMS =period % DELTA_SLEEP_MS;
 
-	Module_Status status = H08R6_OK;
-	int16_t buffer;
-	uint8_t coun;
-	uint32_t period = timeout / Numofsamples;
+	while(numDeltaDelay-- > 0){
+		vTaskDelay(pdMS_TO_TICKS(DELTA_SLEEP_MS));
 
-	if (period < MIN_MEMS_PERIOD_MS)
+		// Look for ENTER key to stop the stream
+		for(uint8_t chr =1; chr < MSG_RX_BUF_SIZE; chr++){
+			if(UARTRxBuf[PcPort - 1][chr] == '\r'){
+				UARTRxBuf[PcPort - 1][chr] =0;
+				StopeCliStreamFlag = 1;
+				return H08R6_ERR_TERMINATED;
+			}
+		}
+
+		if(stopStream)
+			return H08R6_ERR_TERMINATED;
+	}
+
+	vTaskDelay(pdMS_TO_TICKS(lastDelayMS));
+	return H08R6_OK;
+}
+/*-----------------------------------------------------------*/
+
+Module_Status Exportstreamtoport(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout){
+	Module_Status status =H08R6_OK;
+	uint32_t samples =0;
+	uint32_t period =0;
+	period =timeout / Numofsamples;
+
+	if(timeout < MIN_PERIOD_MS || period < MIN_PERIOD_MS)
 		return H08R6_ERR_WrongParams;
 
-	// TODO: Check if CLI is enable or not
-
-	if (period > timeout)
-		timeout = period;
-
-	long numTimes = timeout / period;
-	stopStream = false;
-
-	while ((numTimes-- > 0) || (timeout >= MAX_MEMS_TIMEOUT_MS)) {
-		function(&buffer);
-		Buffer[coun] = buffer;
-		coun++;
+	while(samples < Numofsamples){
+		status =Exporttoport(module,port,function);
 		vTaskDelay(pdMS_TO_TICKS(period));
-		if (stopStream) {
-			status = H08R6_ERR_TERMINATED;
-			break;
-		}
+		samples++;
 	}
+	tofMode = DEFAULT;
+
 	return status;
+}
+
+/*-----------------------------------------------------------*/
+Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
+
+	int16_t Distance_average;
+	static uint8_t temp[4] = { 0 };
+	Module_Status status = H08R6_OK;
+
+	switch (function) {
+	case AVERAGE:
+
+		if ((status = SampleDistanceAverage(&Distance_average)) != H08R6_OK)
+			return status = H08R6_ERROR;
+
+		if (module == myID || module == 0) {
+			temp[0] = (uint8_t) ((*(uint32_t*) &Distance_average) >> 0);
+			temp[1] = (uint8_t) ((*(uint32_t*) &Distance_average) >> 8);
+			writePxITMutex(port, (char*) &temp[0], 2 * sizeof(uint8_t), 10);
+		} else {
+			if (H08R6_OK == status)
+				messageParams[1] = BOS_OK;
+			else
+				messageParams[1] = BOS_ERROR;
+			messageParams[0] = FMT_UINT16;
+			messageParams[2] = 1;
+			messageParams[3] =
+					(uint8_t) ((*(uint32_t*) &Distance_average) >> 0);
+			messageParams[4] =
+					(uint8_t) ((*(uint32_t*) &Distance_average) >> 8);
+			SendMessageToModule(module, CODE_READ_RESPONSE,
+					2 * sizeof(uint8_t) + 3);
+		}
+		break;
+	default:
+		status = H08R6_ERR_WrongParams;
+		break;
+	}
 
 
+	return status;
 }
 
 /* -----------------------------------------------------------------------
@@ -690,38 +686,19 @@ static Module_Status StreamMemsToBuf(int16_t *Buffer, uint32_t Numofsamples,uint
  */
 
 /*-----------------------------------------------------------*/
-/*Module_Status SampleDistance(VL53L8CX_APIs_Distance *Distance) {
-	Module_Status status = H08R6_OK;
 
-	VL53L8CX_Init();
-
-	if ((status = VL53L8CX_SampleDistance(Distance)) != H08R6_OK)
-		return status = H08R6_ERROR;
-
-	return status;
-}*/
-/*-----------------------------------------------------------*/
 Module_Status SampleDistanceAverage(int16_t *Distance_average) {
 	Module_Status status = H08R6_OK;
+
 	VL53L8CX_Init();
+
 
 	if ((status = VL53L8CX_SampleDistanceAverage(Distance_average)) != H08R6_OK)
 		return status = H08R6_ERROR;
 
 	return status;
 }
-/*-----------------------------------------------------------*/
-/*Module_Status SampleAllData(VL53L8CX_APIs_ResultsData *Data) {
-	Module_Status status = H08R6_OK;
 
-	VL53L8CX_Init();
-
-	if ((status = VL53L8CX_SampleRangingAllData(Data)) != H08R6_OK)
-		return status = H08R6_ERROR;
-
-	return status;
-}
-*/
 /*-----------------------------------------------------------*/
 Module_Status SampletoPort(uint8_t module, uint8_t port, All_Data function) {
 	Module_Status status = H08R6_OK;
@@ -777,12 +754,6 @@ Module_Status StreamToBuffer(int16_t *buffer,All_Data function,uint32_t Numofsam
 	}
 
 }
-
-/*-----------------------------------------------------------*/
-
-/*-----------------------------------------------------------*/
-
-/*-----------------------------------------------------------*/
 
 /* -----------------------------------------------------------------------
  |								Commands							      |
@@ -868,12 +839,5 @@ static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSe
 }
 /*-----------------------------------------------------------*/
 
-/*-----------------------------------------------------------*/
-
-/*-----------------------------------------------------------*/
-
-/*-----------------------------------------------------------*/
-
-/*-----------------------------------------------------------*/
 
 /************************ (C) COPYRIGHT HEXABITZ *****END OF FILE****/

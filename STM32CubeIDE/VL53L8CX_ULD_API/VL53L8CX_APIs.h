@@ -45,6 +45,7 @@ extern "C" {
 #define LPn_Pin 				GPIO_PIN_8
 #define LPn_GPIO_Port 			GPIOA
 
+
 #define VL53L8CX_APIs_FREQUANCY		5U    /* 4x4 resolution max is 60 , 8x8 resolution max is 15 */
 #define LOW_MOTION_INDICATOR	((uint16_t) 500U)
 #define HIGH_MOTION_INDICATOR	((uint16_t) 1000U)
