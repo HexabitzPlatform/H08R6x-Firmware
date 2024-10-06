@@ -36,12 +36,15 @@ int16_t Distance_average;
 
 VL53L8CX_APIs_ResultsData 	Data;
 
-VL53L8CX_APIs_Distance 		Distance;
+//VL53L8CX_APIs_Distance 		Distance;
 
-VL53L8CX_APIs_NOfTargets 	Nb_target;
+//VL53L8CX_APIs_NOfTargets 	Nb_target;
 
-VL53L8CX_APIs_Indicator 	Indicator;
+//VL53L8CX_APIs_Indicator 	Indicator;
 
+int16_t Distance[16];
+int16_t Nb_target[16];
+int16_t Indicator[16];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -126,7 +129,7 @@ int main(void)
 
   VL53L8CX_SampleDistanceAverage(&Distance_average);*/
 
-  VL53L8CX_StreamDistance(&Distance_average, 5);
+//  VL53L8CX_StreamDistance(&Distance_average, 5);
 
  // VL53L8CX_NumberofTargets(&Nb_target);
 
@@ -139,6 +142,16 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//	  VL53L8CX_SampleRangingAllData(&Data);
+
+	  VL53L8CX_SampleDistance(Distance);
+
+	  VL53L8CX_SampleDistanceAverage(&Distance_average);
+
+	  VL53L8CX_MotionIndicator(Indicator);
+
+	  VL53L8CX_NumberofTargets(Nb_target);
+
   }
   /* USER CODE END 3 */
 }

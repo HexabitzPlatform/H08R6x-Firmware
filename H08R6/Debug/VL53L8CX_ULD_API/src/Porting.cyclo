@@ -1,4 +1,0 @@
-../VL53L8CX_ULD_API/src/Porting.c:43:16:SetGPIOsPin	2
-../VL53L8CX_ULD_API/src/Porting.c:61:16:ResetGPIOsPin	2
-../VL53L8CX_ULD_API/src/Porting.c:84:16:SendSPI	4
-../VL53L8CX_ULD_API/src/Porting.c:106:16:ReceiveSPI	4

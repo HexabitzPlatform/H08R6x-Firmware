@@ -421,7 +421,7 @@ VL53L8CX_Status VL53L8CX_xTalkCalibration(void) {
  * @param1: (VL53L8CX_APIs_Distance) *Distance : VL53L8CX distance structure.
  * @return: (uint8_t) status : 0 if start is OK.
  */
-VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance *Distance) {
+VL53L8CX_Status VL53L8CX_SampleDistance(int16_t *Distance) {
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
 	if (IS_INTERRUPT) {
@@ -430,7 +430,7 @@ VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance *Distance) {
 		get_data_by_polling(&Dev);
 	}
 	for (int i = 0; i < resolution; i++) {
-		Distance->distance[i] = Results.distance_mm[i];
+		Distance[i] = Results.distance_mm[i];
 	}
 	if (VL53L8CX_StopRanging())
 		return VL53L8CX_ERR_Rang;
@@ -510,7 +510,7 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t *Distance_a, uint32_t Time_out) 
  * @param1: VL53L8CX_APIs_NOfTargets* NofTargets:  Number of valid target variable.
  * @return: (uint8_t) status : 0 if start is OK.
  */
-VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets *NofTargets) {
+VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t *NofTargets) {
 	if (vl53l8cx_start_ranging(&Dev))
 		return VL53L8CX_ERR_Rang;
 	if (IS_INTERRUPT) {
@@ -519,7 +519,7 @@ VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets *NofTargets) {
 		get_data_by_polling(&Dev);
 	}
 	for (int i = 0; i < resolution; i++) {
-		NofTargets->nb_target[i] = Results.nb_target_detected[i];
+		NofTargets[i] = Results.nb_target_detected[i];
 	}
 	if (VL53L8CX_StopRanging())
 		return VL53L8CX_ERR_Rang;
@@ -537,7 +537,7 @@ VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets *NofTargets) {
  * @param1: VL53L8CX_APIs_Indicator* Indicator:  Indicator array contains 1 in zone where motion is detected.
  * @return: (uint8_t) status : 0 if start is OK.
  */
-VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator *Indicator) {
+VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator) {
 	/* Create motion indicator with resolution 4x4 */
 	if (vl53l8cx_motion_indicator_init(&Dev, &motion_config,
 			VL53L8CX_RESOLUTION_4X4))
@@ -573,7 +573,7 @@ VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator *Indicator) {
 	for (int i = 0; i < resolution; i++) {
 		if (Results.motion_indicator.motion[motion_config.map_id[i]] >= 44) {
 			//printf("Motion detected in this area: %3d \n", i);
-			Indicator->indicator[i] = 1;
+			Indicator[i] = 1;
 		}
 	}
 	if (VL53L8CX_StopRanging())
