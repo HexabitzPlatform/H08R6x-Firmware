@@ -25,7 +25,7 @@ uint8_t resolution, isAlive, p_data_ready;
 uint32_t elapsedTime;
 
 VL53L8CX_Motion_Configuration motion_config; /* Motion configuration*/
-VL53L8CX_DetectionThresholds thresholds[VL53L8CX_NB_THRESHOLDS];
+// VL53L8CX_DetectionThresholds thresholds[VL53L8CX_NB_THRESHOLDS];
 // uint8_t xtalk_data[VL53L8CX_XTALK_BUFFER_SIZE];
 
 /* Local Functions Definitions */
