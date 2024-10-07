@@ -506,27 +506,27 @@ VL53L8CX_Status VL53L8CX_StreamDistance(int16_t *Distance_a, uint32_t Time_out) 
 }
 
 /**********************************************************************/
-/**
- * @brief: Number of valid target detected for 1 zone.
- * @param1: VL53L8CX_APIs_NOfTargets* NofTargets:  Number of valid target variable.
- * @return: (uint8_t) status : 0 if start is OK.
- */
-VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t *NofTargets) {
-	if (vl53l8cx_start_ranging(&Dev))
-		return VL53L8CX_ERR_Rang;
-	if (IS_INTERRUPT) {
-		get_data_by_interrupt(&Dev);
-	} else {
-		get_data_by_polling(&Dev);
-	}
-	for (int i = 0; i < resolution; i++) {
-		NofTargets[i] = Results.nb_target_detected[i];
-	}
-	if (VL53L8CX_StopRanging())
-		return VL53L8CX_ERR_Rang;
-	return VL53L8CX_OK;
-
-}
+///**
+// * @brief: Number of valid target detected for 1 zone.
+// * @param1: VL53L8CX_APIs_NOfTargets* NofTargets:  Number of valid target variable.
+// * @return: (uint8_t) status : 0 if start is OK.
+// */
+//VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t *NofTargets) {
+//	if (vl53l8cx_start_ranging(&Dev))
+//		return VL53L8CX_ERR_Rang;
+//	if (IS_INTERRUPT) {
+//		get_data_by_interrupt(&Dev);
+//	} else {
+//		get_data_by_polling(&Dev);
+//	}
+//	for (int i = 0; i < resolution; i++) {
+//		NofTargets[i] = Results.nb_target_detected[i];
+//	}
+//	if (VL53L8CX_StopRanging())
+//		return VL53L8CX_ERR_Rang;
+//	return VL53L8CX_OK;
+//
+//}
 
 /**********************************************************************/
 /**
@@ -538,50 +538,50 @@ VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t *NofTargets) {
  * @param1: VL53L8CX_APIs_Indicator* Indicator:  Indicator array contains 1 in zone where motion is detected.
  * @return: (uint8_t) status : 0 if start is OK.
  */
-VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator) {
-	/* Create motion indicator with resolution 4x4 */
-	if (vl53l8cx_motion_indicator_init(&Dev, &motion_config,
-			VL53L8CX_RESOLUTION_4X4))
-		return VL53L8CX_ERR_MOTION_IND;
-
-	/* (Optional) Change the min and max distance used to detect motions. The
-	 * difference between min and max must never be >1500mm, and minimum never be <400mm,
-	 * otherwise the function below returns error 127 */
-	status = vl53l8cx_motion_indicator_set_distance_motion(&Dev, &motion_config,
-			LOW_MOTION_INDICATOR, HIGH_MOTION_INDICATOR);
-	if (status) {
-		return VL53L8CX_ERR_MOTION_IND;
-	}
-
-	/* If user want to change the resolution, he also needs to update the motion indicator resolution */
-
-	if (vl53l8cx_get_resolution(&Dev, &resolution))
-		return VL53L8CX_ERR_RES;
-
-	if (vl53l8cx_motion_indicator_set_resolution(&Dev, &motion_config,
-			resolution))
-		return VL53L8CX_ERR_MOTION_IND;
-
-	if (vl53l8cx_start_ranging(&Dev))
-		return VL53L8CX_ERR_Rang;
-
-	if (IS_INTERRUPT) {
-		get_data_by_interrupt(&Dev);
-	} else {
-		get_data_by_polling(&Dev);
-	}
-
-	for (int i = 0; i < resolution; i++) {
-		if (Results.motion_indicator.motion[motion_config.map_id[i]] >= 44) {
-			//printf("Motion detected in this area: %3d \n", i);
-			Indicator[i] = 1;
-		}
-	}
-	if (VL53L8CX_StopRanging())
-		return VL53L8CX_ERR_Rang;
-
-	return VL53L8CX_OK;
-}
+//VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator) {
+//	/* Create motion indicator with resolution 4x4 */
+//	if (vl53l8cx_motion_indicator_init(&Dev, &motion_config,
+//			VL53L8CX_RESOLUTION_4X4))
+//		return VL53L8CX_ERR_MOTION_IND;
+//
+//	/* (Optional) Change the min and max distance used to detect motions. The
+//	 * difference between min and max must never be >1500mm, and minimum never be <400mm,
+//	 * otherwise the function below returns error 127 */
+//	status = vl53l8cx_motion_indicator_set_distance_motion(&Dev, &motion_config,
+//			LOW_MOTION_INDICATOR, HIGH_MOTION_INDICATOR);
+//	if (status) {
+//		return VL53L8CX_ERR_MOTION_IND;
+//	}
+//
+//	/* If user want to change the resolution, he also needs to update the motion indicator resolution */
+//
+//	if (vl53l8cx_get_resolution(&Dev, &resolution))
+//		return VL53L8CX_ERR_RES;
+//
+//	if (vl53l8cx_motion_indicator_set_resolution(&Dev, &motion_config,
+//			resolution))
+//		return VL53L8CX_ERR_MOTION_IND;
+//
+//	if (vl53l8cx_start_ranging(&Dev))
+//		return VL53L8CX_ERR_Rang;
+//
+//	if (IS_INTERRUPT) {
+//		get_data_by_interrupt(&Dev);
+//	} else {
+//		get_data_by_polling(&Dev);
+//	}
+//
+//	for (int i = 0; i < resolution; i++) {
+//		if (Results.motion_indicator.motion[motion_config.map_id[i]] >= 44) {
+//			//printf("Motion detected in this area: %3d \n", i);
+//			Indicator[i] = 1;
+//		}
+//	}
+//	if (VL53L8CX_StopRanging())
+//		return VL53L8CX_ERR_Rang;
+//
+//	return VL53L8CX_OK;
+//}
 
 /**********************************************************************/
 /**
