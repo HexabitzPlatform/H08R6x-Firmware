@@ -23,7 +23,7 @@ extern "C" {
 #include "vl53l8cx_plugin_xtalk.h"
 #include "vl53l8cx_plugin_detection_thresholds.h"
 #include "vl53l8cx_plugin_motion_indicator.h"
-#include "BOS.h"
+//#include "BOS.h"
 #include "Porting.h"
 
 /* Private macros ------------------------------------------------------------*/
@@ -90,60 +90,6 @@ typedef enum
 	ZONES_8X8 = 0x01,
 }Resolution_e;
 
-/* typedef structure Definitions */
-typedef struct
-{
-	/* Internal sensor silicon temperature */
-	int8_t silicon_temp_degc;
-	/* Ambient noise in kcps/spads */
-	uint32_t ambient_per_spad[VL53L8CX_RESOLUTION_8X8];
-	/* Number of valid target detected for 1 zone */
-	uint8_t nb_target_detected[VL53L8CX_RESOLUTION_8X8];
-	/* Number of spads enabled for this ranging */
-	uint32_t nb_spads_enabled[VL53L8CX_RESOLUTION_8X8];
-	/* Signal returned to the sensor in kcps/spads */
-	uint32_t signal_per_spad[(VL53L8CX_RESOLUTION_8X8
-					*VL53L8CX_NB_TARGET_PER_ZONE)];
-	/* Sigma of the current distance in mm */
-	uint16_t range_sigma_mm[(VL53L8CX_RESOLUTION_8X8
-					*VL53L8CX_NB_TARGET_PER_ZONE)];
-	/* Measured distance in mm */
-	int16_t distance_mm[(VL53L8CX_RESOLUTION_8X8
-					*VL53L8CX_NB_TARGET_PER_ZONE)];
-	/* Estimated reflectance in percent */
-	uint8_t reflectance[(VL53L8CX_RESOLUTION_8X8
-					*VL53L8CX_NB_TARGET_PER_ZONE)];
-	/* Status indicating the measurement validity (5 & 9 means ranging OK)*/
-	uint8_t target_status[(VL53L8CX_RESOLUTION_8X8
-					*VL53L8CX_NB_TARGET_PER_ZONE)];
-	/* Motion detector results */
-	struct
-	{
-		uint32_t global_indicator_1;
-		uint32_t global_indicator_2;
-		uint8_t	 status;
-		uint8_t	 nb_of_detected_aggregates;
-		uint8_t	 nb_of_aggregates;
-		uint8_t	 spare;
-		uint32_t motion[32];
-	} motion_indicator;
-} VL53L8CX_APIs_ResultsData;
-
-typedef struct
-{
-	int16_t distance[(VL53L8CX_RESOLUTION_8X8*VL53L8CX_NB_TARGET_PER_ZONE)];
-}VL53L8CX_APIs_Distance;
-
-typedef struct
-{
-	int16_t nb_target[VL53L8CX_RESOLUTION_8X8];
-}VL53L8CX_APIs_NOfTargets;
-
-typedef struct
-{
-	int16_t indicator[VL53L8CX_RESOLUTION_8X8];
-}VL53L8CX_APIs_Indicator;
-
 typedef struct
 {
 	uint32_t global_indicator_1;
@@ -162,12 +108,12 @@ VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res);
 VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr);
 VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang);
 VL53L8CX_Status VL53L8CX_xTalkCalibration(void);
-VL53L8CX_Status VL53L8CX_SampleDistance(VL53L8CX_APIs_Distance* Distance);
+VL53L8CX_Status VL53L8CX_SampleDistance(int16_t* Distance);
 VL53L8CX_Status VL53L8CX_SampleDistanceAverage(int16_t* Distance_a);
 VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out);
-VL53L8CX_Status VL53L8CX_NumberofTargets(VL53L8CX_APIs_NOfTargets* NofTargets);
-VL53L8CX_Status VL53L8CX_MotionIndicator(VL53L8CX_APIs_Indicator* Indicator);
-VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* Data);
+VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t* NofTargets);
+VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t* Indicator);
+//VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* Data);
 
 #endif /* VL53L8CX_APIs */
 /************************ (C) COPYRIGHT Hexabitz *****END OF FILE****/

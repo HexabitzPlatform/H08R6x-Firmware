@@ -33,16 +33,6 @@ extern uint8_t numOfRecordedSnippets;
 /* Driver variables */
 // int16_t average;
 
-VL53L8CX_APIs_ResultsData 	Data;
-
-VL53L8CX_APIs_Distance 		Distance;
-
-VL53L8CX_APIs_NOfTargets 	Nb_target;
-
-VL53L8CX_APIs_Indicator 	Indicator;
-
-
-
 /* variables for Streams ----------------------------------------------------*/
 uint32_t numofsamples[2], Timeout[2];
 uint8_t Port[2], Module[2], mode[2];
@@ -380,6 +370,7 @@ void Module_Peripheral_Init(void) {
 	MX_USART5_UART_Init();
 	MX_USART6_UART_Init();
 	MX_GPIO_Init();
+	VL53L8CX_Init();
 
 
 	//Circulating DMA Channels ON All Module
@@ -693,7 +684,7 @@ Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
 Module_Status SampleDistanceAverage(int16_t *average) {
 	Module_Status status = H08R6_OK;
 
-	VL53L8CX_Init();
+
 
 
 	if ((status = VL53L8CX_SampleDistanceAverage(average)) != H08R6_OK)
