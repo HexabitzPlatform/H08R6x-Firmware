@@ -342,13 +342,8 @@ VL53L8CX_Status VL53L8CX_Init(void) {
  */
 VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res) {
 
-	if (Res == ZONES_4X4) {
-		if (vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_4X4))
-			return VL53L8CX_ERR_RES;
-	} else if (Res == ZONES_8X8) {
-		if (vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_8X8))
-			return VL53L8CX_ERR_RES;
-	}
+	if (vl53l8cx_set_resolution(&Dev, VL53L8CX_RESOLUTION_4X4))
+		return VL53L8CX_ERR_RES;
 
 	if (VL53L8CX_SetFrequancy(VL53L8CX_APIs_FREQUANCY))
 		return VL53L8CX_ERR_Freq;
