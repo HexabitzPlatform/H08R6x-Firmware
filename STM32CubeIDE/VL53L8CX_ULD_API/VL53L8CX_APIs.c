@@ -26,7 +26,7 @@ uint32_t elapsedTime;
 
 VL53L8CX_Motion_Configuration motion_config; /* Motion configuration*/
 VL53L8CX_DetectionThresholds thresholds[VL53L8CX_NB_THRESHOLDS];
-uint8_t xtalk_data[VL53L8CX_XTALK_BUFFER_SIZE];
+// uint8_t xtalk_data[VL53L8CX_XTALK_BUFFER_SIZE];
 
 /* Local Functions Definitions */
 VL53L8CX_Status VL53L8CX_Reset(void);
@@ -406,15 +406,15 @@ VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang) {
  * and the target must stay in Full FOV, so short distance are easier for calibration.
  * @return (uint8_t) status : 0 if calibration OK.
  */
-VL53L8CX_Status VL53L8CX_xTalkCalibration(void) {
-	if (vl53l8cx_calibrate_xtalk(&Dev, 3, 4, 600))
-		return VL53L8CX_ERR_CALIBRATE;
-	if (vl53l8cx_get_caldata_xtalk(&Dev, xtalk_data))
-		return VL53L8CX_ERR_CALIBRATE;
-	if (vl53l8cx_set_caldata_xtalk(&Dev, xtalk_data))
-		return VL53L8CX_ERR_CALIBRATE;
-	return VL53L8CX_OK;
-}
+//VL53L8CX_Status VL53L8CX_xTalkCalibration(void) {
+//	if (vl53l8cx_calibrate_xtalk(&Dev, 3, 4, 600))
+//		return VL53L8CX_ERR_CALIBRATE;
+//	if (vl53l8cx_get_caldata_xtalk(&Dev, xtalk_data))
+//		return VL53L8CX_ERR_CALIBRATE;
+//	if (vl53l8cx_set_caldata_xtalk(&Dev, xtalk_data))
+//		return VL53L8CX_ERR_CALIBRATE;
+//	return VL53L8CX_OK;
+//}
 
 /**********************************************************************/
 /**

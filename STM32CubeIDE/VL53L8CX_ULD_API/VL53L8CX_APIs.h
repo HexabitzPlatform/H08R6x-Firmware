@@ -107,7 +107,7 @@ VL53L8CX_Status VL53L8CX_Init(void);
 VL53L8CX_Status VL53L8CX_SetResolution(Resolution_e Res);
 VL53L8CX_Status VL53L8CX_SetPowerMode(PwrMode_e Pwr);
 VL53L8CX_Status VL53L8CX_SetRangingMode(RangingMode_e Rang);
-VL53L8CX_Status VL53L8CX_xTalkCalibration(void);
+//VL53L8CX_Status VL53L8CX_xTalkCalibration(void);
 VL53L8CX_Status VL53L8CX_SampleDistance(int16_t* Distance);
 VL53L8CX_Status VL53L8CX_SampleDistanceAverage(int16_t* Distance_a);
 VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out);
