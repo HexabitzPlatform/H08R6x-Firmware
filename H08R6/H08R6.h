@@ -168,7 +168,7 @@ extern void ExecuteMonitor(void);
  |								  APIs							          |  																 	|
 /* -----------------------------------------------------------------------
  */
-Module_Status SampleDistanceAverage(int16_t *Distance_average);
+Module_Status SampleDistanceAverage(int16_t *average);
 Module_Status SampletoPort(uint8_t module,uint8_t port,All_Data function);
 Module_Status StreamtoPort(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToTerminal(uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
