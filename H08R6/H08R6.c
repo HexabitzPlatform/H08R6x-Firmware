@@ -370,7 +370,7 @@ void Module_Peripheral_Init(void) {
 	MX_USART5_UART_Init();
 	MX_USART6_UART_Init();
 	MX_GPIO_Init();
-	VL53L8CX_Init();
+
 
 
 	//Circulating DMA Channels ON All Module
@@ -683,6 +683,8 @@ Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
 
 Module_Status SampleDistanceAverage(int16_t *average) {
 	Module_Status status = H08R6_OK;
+
+	VL53L8CX_Init();
 
 
 
