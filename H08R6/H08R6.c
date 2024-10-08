@@ -370,7 +370,7 @@ void Module_Peripheral_Init(void) {
 	MX_USART5_UART_Init();
 	MX_USART6_UART_Init();
 	MX_GPIO_Init();
-
+	MX_SPI2_Init();
 
 
 	//Circulating DMA Channels ON All Module
@@ -393,7 +393,7 @@ void Module_Peripheral_Init(void) {
 
 
 	/* Create module special task (if needed) */
-	xTaskCreate(TOFTask,(const char* )"TOFTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&TOFTaskHandle);
+//	xTaskCreate(TOFTask,(const char* )"TOFTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&TOFTaskHandle);
 
 
 }
@@ -448,22 +448,22 @@ uint8_t GetPort(UART_HandleTypeDef *huart) {
 }
 
 /* Module special task function (if needed) */
-void TOFTask(void *argument) {
-
-	switch(tofMode){
-		case STREAM_TO_PORT:
-			Exportstreamtoport(Module[0],Port[0],mode[0],numofsamples[0],Timeout[0]);
-			break;
-		case STREAM_TO_Terminal:
-			Exportstreamtoterminal(Port[1],mode[1],numofsamples[1],Timeout[1]);
-			break;
-		default:
-			osDelay(10);
-			break;
-	}
-
-	taskYIELD();
-}
+//void TOFTask(void *argument) {
+//
+//	switch(tofMode){
+//		case STREAM_TO_PORT:
+//			Exportstreamtoport(Module[0],Port[0],mode[0],numofsamples[0],Timeout[0]);
+//			break;
+//		case STREAM_TO_Terminal:
+//			Exportstreamtoterminal(Port[1],mode[1],numofsamples[1],Timeout[1]);
+//			break;
+//		default:
+//			osDelay(10);
+//			break;
+//	}
+//
+//	taskYIELD();
+//}
 
 /*-----------------------------------------------------------*/
 static Module_Status StreamMemsToBuf(int16_t *Buffer, uint32_t Numofsamples,uint32_t timeout,SampleMemsToBuffer function){
