@@ -10,12 +10,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"
 
-/*  */
-#ifndef __N
-uint16_t arrayPortsDir[MaxNumOfModules]; /* Array ports directions */
-#else
-uint16_t arrayPortsDir[__N ];
-#endif
+///*  */
+//#ifndef __N
+//uint16_t arrayPortsDir[MaxNumOfModules]; /* Array ports directions */
+//#else
+//uint16_t arrayPortsDir[__N ];
+//#endif
 
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart2_rx;
@@ -25,7 +25,7 @@ DMA_HandleTypeDef hdma_usart5_rx;
 DMA_HandleTypeDef hdma_usart6_rx;
 
 /* USART1 init function */
-#ifdef _Usart1
+#ifdef _USART1
 void MX_USART1_UART_Init(void) {
 	huart1.Instance = USART1;
 	huart1.Init.BaudRate = DEF_ARRAY_BAUDRATE;
@@ -55,7 +55,7 @@ void MX_USART1_UART_Init(void) {
 #endif
 
 /* USART2 init function */
-#ifdef _Usart2
+#ifdef _USART2
 void MX_USART2_UART_Init(void) {
 	huart2.Instance = USART2;
 	huart2.Init.BaudRate = DEF_ARRAY_BAUDRATE;
@@ -85,7 +85,7 @@ void MX_USART2_UART_Init(void) {
 #endif
 
 /* USART3 init function */
-#ifdef _Usart3
+#ifdef _USART3
 void MX_USART3_UART_Init(void) {
 	huart3.Instance = USART3;
 	huart3.Init.BaudRate = DEF_ARRAY_BAUDRATE;
@@ -115,7 +115,7 @@ void MX_USART3_UART_Init(void) {
 #endif
 
 /* USART4 init function */
-#ifdef _Usart4
+#ifdef _USART4
 void MX_USART4_UART_Init(void) {
 	huart4.Instance = USART4;
 	huart4.Init.BaudRate = DEF_ARRAY_BAUDRATE;
@@ -138,7 +138,7 @@ void MX_USART4_UART_Init(void) {
 #endif
 
 /* USART5 init function */
-#ifdef _Usart5
+#ifdef _USART5
 void MX_USART5_UART_Init(void) {
 	huart5.Instance = USART5;
 	huart5.Init.BaudRate = DEF_ARRAY_BAUDRATE;
@@ -162,7 +162,7 @@ void MX_USART5_UART_Init(void) {
 #endif
 
 /* USART6 init function */
-#ifdef _Usart6
+#ifdef _USART6
 void MX_USART6_UART_Init(void) {
 	huart6.Instance = USART6;
 	huart6.Init.BaudRate = DEF_ARRAY_BAUDRATE;
@@ -190,7 +190,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 	RCC_PeriphCLKInitTypeDef PeriphClkInit = { 0 };
 	if (huart->Instance == USART1) {
-#ifdef _Usart1
+#ifdef _USART1
 		PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
 		PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;
 		HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
@@ -225,6 +225,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 		hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart1_rx.Init.Mode = DMA_CIRCULAR;
 		hdma_usart1_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		UARTDMAHandler[UART_DMA_PORT_INDEX_P4] = &hdma_usart1_rx;
+
 		HAL_DMA_Init(&hdma_usart1_rx);
 
 		__HAL_LINKDMA(huart, hdmarx, hdma_usart1_rx);
@@ -234,7 +237,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 #endif
 	} else if (huart->Instance == USART2) {
-#ifdef _Usart2
+#ifdef _USART2
 
 		PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART2;
 		PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
@@ -270,6 +273,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 		hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
 		hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		UARTDMAHandler[UART_DMA_PORT_INDEX_P2] = &hdma_usart2_rx;
+
 		HAL_DMA_Init(&hdma_usart2_rx);
 
 		__HAL_LINKDMA(huart, hdmarx, hdma_usart2_rx);
@@ -279,7 +285,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 #endif
 	} else if (huart->Instance == USART3) {
-#ifdef _Usart3
+#ifdef _USART3
 		PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART3;
 		PeriphClkInit.Usart3ClockSelection = RCC_USART3CLKSOURCE_PCLK1;
 		HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
@@ -314,6 +320,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 		hdma_usart3_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart3_rx.Init.Mode = DMA_CIRCULAR;
 		hdma_usart3_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		UARTDMAHandler[UART_DMA_PORT_INDEX_P3] = &hdma_usart3_rx;
+
 		HAL_DMA_Init(&hdma_usart3_rx);
 
 		__HAL_LINKDMA(huart, hdmarx, hdma_usart3_rx);
@@ -323,10 +332,11 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 #endif
 	} else if (huart->Instance == USART4) {
-#ifdef _Usart4
+#ifdef _USART4
 
 		/* Peripheral clock enable */
-		__USART4_CLK_ENABLE()
+		__HAL_RCC_USART4_CLK_ENABLE();
+		__HAL_RCC_GPIOA_CLK_ENABLE();
 		;
 
 		/* USART4 GPIO Configuration */
@@ -355,6 +365,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 		hdma_usart4_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart4_rx.Init.Mode = DMA_CIRCULAR;
 		hdma_usart4_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		UARTDMAHandler[UART_DMA_PORT_INDEX_P1] = &hdma_usart4_rx;
+
 		HAL_DMA_Init(&hdma_usart4_rx);
 
 		__HAL_LINKDMA(huart, hdmarx, hdma_usart4_rx);
@@ -364,7 +377,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 #endif
 	} else if (huart->Instance == USART5) {
-#ifdef _Usart5
+#ifdef _USART5
 
 		/* USART5 clock enable */
 		__HAL_RCC_USART5_CLK_ENABLE();
@@ -396,6 +409,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 		hdma_usart5_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart5_rx.Init.Mode = DMA_CIRCULAR;
 		hdma_usart5_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		UARTDMAHandler[UART_DMA_PORT_INDEX_P5] = &hdma_usart5_rx;
+
 		HAL_DMA_Init(&hdma_usart5_rx);
 
 		__HAL_LINKDMA(huart, hdmarx, hdma_usart5_rx);
@@ -405,7 +421,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 #endif
 	} else if (huart->Instance == USART6) {
-#ifdef _Usart6
+#ifdef _USART6
 
 		/* USART6 clock enable */
 		__HAL_RCC_USART6_CLK_ENABLE();
@@ -437,6 +453,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 		hdma_usart6_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
 		hdma_usart6_rx.Init.Mode = DMA_CIRCULAR;
 		hdma_usart6_rx.Init.Priority = DMA_PRIORITY_LOW;
+
+		UARTDMAHandler[UART_DMA_PORT_INDEX_P6] = &hdma_usart6_rx;
+
 		HAL_DMA_Init(&hdma_usart6_rx);
 
 		__HAL_LINKDMA(huart, hdmarx, hdma_usart6_rx);
@@ -469,24 +488,20 @@ HAL_StatusTypeDef readPxMutex(uint8_t port, char *buffer, uint16_t n,
 	return result;
 }
 
-/* --- Blocking (polling-based) write protected with a semaphore --- 
- */
-HAL_StatusTypeDef writePxMutex(uint8_t port, char *buffer, uint16_t n,
-		uint32_t mutexTimeout, uint32_t portTimeout) {
-	HAL_StatusTypeDef result = HAL_ERROR;
+/* Blocking (polling-based) write protected with a semaphore */
+HAL_StatusTypeDef writePxMutex(uint8_t port,char *buffer,uint16_t n,uint32_t mutexTimeout,uint32_t portTimeout){
+	HAL_StatusTypeDef result =HAL_ERROR;
 
-	if (GetUart(port) != NULL) {
+	if(GetUart(port) != NULL){
 		/*/ Wait for the semaphore to be available. */
-		if (osSemaphoreWait(PxTxSemaphoreHandle[port], mutexTimeout) == osOK) {
-			while (result != HAL_OK && result != HAL_TIMEOUT) {
-				result = HAL_UART_Transmit(GetUart(port), (uint8_t*) buffer, n,
-						portTimeout);
+		if(osSemaphoreWait(PxTxSemaphoreHandle[port],mutexTimeout) == osOK){
+			while(result != HAL_OK && result != HAL_TIMEOUT){
+				result =HAL_UART_Transmit(GetUart(port),(uint8_t* )buffer,n,portTimeout);
 			}
 			/* Give back the semaphore. */
 			osSemaphoreRelease(PxTxSemaphoreHandle[port]);
 		}
 	}
-
 	return result;
 }
 
@@ -522,25 +537,7 @@ HAL_StatusTypeDef writePxITMutex(uint8_t port, char *buffer, uint16_t n,
 	return result;
 }
 
-/* --- Non-blocking (DMA-based) write protected with a semaphore --- 
- */
-HAL_StatusTypeDef writePxDMAMutex(uint8_t port, char *buffer, uint16_t n,
-		uint32_t mutexTimeout) {
-	HAL_StatusTypeDef result = HAL_ERROR;
-	UART_HandleTypeDef *hUart = GetUart(port);
 
-	if (hUart != NULL) {
-		/* Wait for the mutex to be available. */
-		if (osSemaphoreWait(PxTxSemaphoreHandle[port], mutexTimeout) == osOK) {
-			/* Setup TX DMA on this port */
-			DMA_MSG_TX_Setup(hUart);
-			/* Transmit the message */
-			result = HAL_UART_Transmit_DMA(hUart, (uint8_t*) buffer, n);
-		}
-	}
-
-	return result;
-}
 
 /* --- Update baudrate for this port --- 
  */
@@ -562,43 +559,43 @@ UART_HandleTypeDef* GetUart(uint8_t port) {
 	switch (port) {
 #ifdef _P1
 	case P1:
-		return P1uart;
+		return UART_P1;
 #endif
 #ifdef _P2
 	case P2:
-		return P2uart;
+		return UART_P2;
 #endif
 #ifdef _P3
 	case P3:
-		return P3uart;
+		return UART_P3;
 #endif
 #ifdef _P4
 	case P4:
-		return P4uart;
+		return UART_P4;
 #endif
 #ifdef _P5
 	case P5:
-		return P5uart;
+		return UART_P5;
 #endif
 #ifdef _P6
 	case P6:
-		return P6uart;
+		return UART_P6;
 #endif
 #ifdef _P7
 		case P7 :
-			return P7uart;
+			return UART_P7;
 	#endif
 #ifdef _P8
 		case P8 :
-			return P8uart;
+			return UART_P8;
 	#endif
 #ifdef _P9
 		case P9 :
-			return P9uart;
+			return UART_P9;
 	#endif
 #ifdef _P10
 		case P10 :
-			return P10uart;
+			return UART_P10;
 	#endif
 	default:
 		return 0;
@@ -612,12 +609,12 @@ UART_HandleTypeDef* GetUart(uint8_t port) {
 void SwapUartPins(UART_HandleTypeDef *huart, uint8_t direction) {
 	if (huart != NULL) {
 		if (direction == REVERSED) {
-			arrayPortsDir[myID - 1] |= (0x8000 >> (GetPort(huart) - 1)); /* Set bit to one */
+			ArrayPortsDir[myID - 1] |= (0x8000 >> (GetPort(huart) - 1)); /* Set bit to one */
 			huart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
 			huart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE;
 			HAL_UART_Init(huart);
 		} else if (direction == NORMAL) {
-			arrayPortsDir[myID - 1] &= (~(0x8000 >> (GetPort(huart) - 1))); /* Set bit to zero */
+			ArrayPortsDir[myID - 1] &= (~(0x8000 >> (GetPort(huart) - 1))); /* Set bit to zero */
 			huart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
 			huart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_DISABLE;
 			HAL_UART_Init(huart);
@@ -633,13 +630,13 @@ BOS_Status ReadPortsDir(void) {
 		if (i != myID) {
 			SendMessageToModule(i, CODE_READ_PORT_DIR, 0);
 			Delay_ms_no_rtos(50);
-			if (responseStatus != BOS_OK) {
+			if (ResponseStatus != BOS_OK) {
 				result = BOS_ERR_NoResponse;
 			}
 		} else {
 			/* Check my own ports */
-			for (uint8_t p = 1; p <= NumOfPorts; p++) {
-				arrayPortsDir[myID - 1] |= (0x0000); /* Set bit to 1 */
+			for (uint8_t p = 1; p <= NUM_OF_PORTS; p++) {
+				ArrayPortsDir[myID - 1] |= (0x0000); /* Set bit to 1 */
 			}
 		}
 	}
@@ -653,9 +650,9 @@ BOS_Status ReadPortsDirMSG(uint8_t SourceModule) {
 	BOS_Status result = BOS_OK;
 	uint16_t temp = 0;
 	/* Check my own ports */
-	for (int p = 1; p <= NumOfPorts; p++) {
+	for (int p = 1; p <= NUM_OF_PORTS; p++) {
 		if (GetUart(p)->AdvancedInit.Swap == UART_ADVFEATURE_SWAP_ENABLE) {
-			messageParams[temp++] = p;
+			MessageParams[temp++] = p;
 		}
 	}
 	/* Send response */
@@ -671,9 +668,9 @@ BOS_Status UpdateMyPortsDir(void)
 	BOS_Status result = BOS_OK;
 
 	/* Check port direction */
-	for (uint8_t p=1 ; p<=NumOfPorts ; p++)
+	for (uint8_t p=1 ; p<=NUM_OF_PORTS ; p++)
 	{
-		if ( !(arrayPortsDir[myID-1] & (0x8000>>(p-1))) ) {
+		if ( !(ArrayPortsDir[myID-1] & (0x8000>>(p-1))) ) {
 			/* Port is normal */
 			SwapUartPins(GetUart(p), NORMAL);
 		} else {

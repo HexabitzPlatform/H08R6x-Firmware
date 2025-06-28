@@ -46,7 +46,7 @@ uint8_t StopeCliStreamFlag;
 int16_t H08R6_average = 0;
 
 /* Module exported parameters ------------------------------------------------*/
-module_param_t modParam[NUM_MODULE_PARAMS] = { { .paramPtr = &H08R6_average, .paramFormat = FMT_INT16, .paramName = "average" } };
+ModuleParam_t ModuleParam[NUM_MODULE_PARAMS] = { { .ParamPtr = &H08R6_average, .ParamFormat = FMT_INT16, .ParamName = "average" } };
 
 
 
@@ -168,83 +168,120 @@ void SystemClock_Config(void) {
 
 /*-----------------------------------------------------------*/
 
-/* --- Save array topology and Command Snippets in Flash RO --- 
- */
-uint8_t SaveToRO(void) {
-	BOS_Status result = BOS_OK;
-	HAL_StatusTypeDef FlashStatus = HAL_OK;
-	uint16_t add = 8;
-	uint16_t temp = 0;
-	uint8_t snipBuffer[sizeof(snippet_t) + 1] = { 0 };
+/***************************************************************************/
+/* Save Command Topology in Flash RO */
+uint8_t SaveTopologyToRO(void) {
 
+	HAL_StatusTypeDef flashStatus = HAL_OK;
+
+	/* flashAdd is initialized with 8 because the first memory room in topology page
+	 * is reserved for module's ID */
+	uint16_t flashAdd = 8;
+	uint16_t temp = 0;
+
+	/* Unlock the FLASH control register access */
 	HAL_FLASH_Unlock();
-	/* Erase RO area */
-	FLASH_PageErase(FLASH_BANK_1, RO_START_ADDRESS);
-	FlashStatus = FLASH_WaitForLastOperation(
-			(uint32_t) HAL_FLASH_TIMEOUT_VALUE);
-	FLASH_PageErase(FLASH_BANK_1, RO_MID_ADDRESS);
-	//TOBECHECKED
-	FlashStatus = FLASH_WaitForLastOperation(
-			(uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+
+	/* Erase Topology page */
+	FLASH_PageErase(FLASH_BANK_2, TOPOLOGY_PAGE_NUM);
+
+	/* Wait for an Erase operation to complete */
+	flashStatus = FLASH_WaitForLastOperation((uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+
+	if (flashStatus != HAL_OK) {
+		/* return FLASH error code */
+		return pFlash.ErrorCode;
+	}
+
+	else {
+		/* Operation is completed, disable the PER Bit */
+		CLEAR_BIT(FLASH->CR, FLASH_CR_PER);
+	}
+
+	/* Save module's ID and topology */
+	if (myID) {
+
+		/* Save module's ID */
+		temp = (uint16_t) (N << 8) + myID;
+
+		/* Save module's ID in Flash memory */
+		HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, TOPOLOGY_START_ADDRESS, temp);
+
+		/* Wait for a Write operation to complete */
+		flashStatus = FLASH_WaitForLastOperation((uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+
+		if (flashStatus != HAL_OK) {
+			/* return FLASH error code */
+			return pFlash.ErrorCode;
+		}
+
+		else {
+			/* If the program operation is completed, disable the PG Bit */
+			CLEAR_BIT(FLASH->CR, FLASH_CR_PG);
+		}
+
+		/* Save topology */
+		for (uint8_t row = 1; row <= N; row++) {
+			for (uint8_t column = 0; column <= MAX_NUM_OF_PORTS; column++) {
+				/* Check the module serial number
+				 * Note: there isn't a module has serial number 0
+				 */
+				if (Array[row - 1][0]) {
+					/* Save each element in topology Array in Flash memory */
+					HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, TOPOLOGY_START_ADDRESS + flashAdd,
+							Array[row - 1][column]);
+					/* Wait for a Write operation to complete */
+					flashStatus = FLASH_WaitForLastOperation((uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+					if (flashStatus != HAL_OK) {
+						/* return FLASH error code */
+						return pFlash.ErrorCode;
+					} else {
+						/* If the program operation is completed, disable the PG Bit */
+						CLEAR_BIT(FLASH->CR, FLASH_CR_PG);
+						/* update new flash memory address */
+						flashAdd += 8;
+					}
+				}
+			}
+		}
+	}
+	/* Lock the FLASH control register access */
+	HAL_FLASH_Lock();
+}
+
+/***************************************************************************/
+/* Save Command Snippets in Flash RO */
+uint8_t SaveSnippetsToRO(void) {
+	HAL_StatusTypeDef FlashStatus = HAL_OK;
+	uint8_t snipBuffer[sizeof(Snippet_t) + 1] = { 0 };
+
+	/* Unlock the FLASH control register access */
+	HAL_FLASH_Unlock();
+	/* Erase Snippets page */
+	FLASH_PageErase(FLASH_BANK_2, SNIPPETS_PAGE_NUM);
+	/* Wait for an Erase operation to complete */
+	FlashStatus = FLASH_WaitForLastOperation((uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+
 	if (FlashStatus != HAL_OK) {
+		/* return FLASH error code */
 		return pFlash.ErrorCode;
 	} else {
 		/* Operation is completed, disable the PER Bit */
 		CLEAR_BIT(FLASH->CR, FLASH_CR_PER);
 	}
 
-	/* Save number of modules and myID */
-	if (myID) {
-		temp = (uint16_t) (N << 8) + myID;
-		//HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD,RO_START_ADDRESS,temp);
-		HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, RO_START_ADDRESS, temp);
-		//TOBECHECKED
-		FlashStatus = FLASH_WaitForLastOperation(
-				(uint32_t) HAL_FLASH_TIMEOUT_VALUE);
-		if (FlashStatus != HAL_OK) {
-			return pFlash.ErrorCode;
-		} else {
-			/* If the program operation is completed, disable the PG Bit */
-			CLEAR_BIT(FLASH->CR, FLASH_CR_PG);
-		}
-
-		/* Save topology */
-		for (uint8_t i = 1; i <= N; i++) {
-			for (uint8_t j = 0; j <= MaxNumOfPorts; j++) {
-				if (array[i - 1][0]) {
-
-					HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD,
-					RO_START_ADDRESS + add, array[i - 1][j]);
-					//HALFWORD 	//TOBECHECKED
-					FlashStatus = FLASH_WaitForLastOperation(
-							(uint32_t) HAL_FLASH_TIMEOUT_VALUE);
-					if (FlashStatus != HAL_OK) {
-						return pFlash.ErrorCode;
-					} else {
-						/* If the program operation is completed, disable the PG Bit */
-						CLEAR_BIT(FLASH->CR, FLASH_CR_PG);
-						add += 8;
-					}
-				}
-			}
-		}
-	}
-
-	// Save Command Snippets
-	int currentAdd = RO_MID_ADDRESS;
-	for (uint8_t s = 0; s < numOfRecordedSnippets; s++) {
-		if (snippets[s].cond.conditionType) {
-			snipBuffer[0] = 0xFE;		// A marker to separate Snippets
-			memcpy((uint32_t*) &snipBuffer[1], (uint8_t*) &snippets[s],
-					sizeof(snippet_t));
-			// Copy the snippet struct buffer (20 x numOfRecordedSnippets). Note this is assuming sizeof(snippet_t) is even.
-			for (uint8_t j = 0; j < (sizeof(snippet_t) / 4); j++) {
-				HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAdd,
-						*(uint64_t*) &snipBuffer[j * 8]);
-				//HALFWORD
-				//TOBECHECKED
-				FlashStatus = FLASH_WaitForLastOperation(
-						(uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+	/* Save Command Snippets */
+	int currentAdd = SNIPPETS_START_ADDRESS;
+	for (uint8_t index = 0; index < NumOfRecordedSnippets; index++) {
+		/* Check if Snippet condition is true or false */
+		if (Snippets[index].Condition.ConditionType) {
+			/* A marker to separate Snippets */
+			snipBuffer[0] = 0xFE;
+			memcpy((uint32_t*) &snipBuffer[1], (uint8_t*) &Snippets[index], sizeof(Snippet_t));
+			/* Copy the snippet struct buffer (20 x NumOfRecordedSnippets). Note this is assuming sizeof(Snippet_t) is even */
+			for (uint8_t j = 0; j < (sizeof(Snippet_t) / 4); j++) {
+				HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAdd, *(uint64_t*) &snipBuffer[j * 8]);
+				FlashStatus = FLASH_WaitForLastOperation((uint32_t) HAL_FLASH_TIMEOUT_VALUE);
 				if (FlashStatus != HAL_OK) {
 					return pFlash.ErrorCode;
 				} else {
@@ -253,14 +290,10 @@ uint8_t SaveToRO(void) {
 					currentAdd += 8;
 				}
 			}
-			// Copy the snippet commands buffer. Always an even number. Note the string termination char might be skipped
-			for (uint8_t j = 0; j < ((strlen(snippets[s].cmd) + 1) / 4); j++) {
-				HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAdd,
-						*(uint64_t*) (snippets[s].cmd + j * 4));
-				//HALFWORD
-				//TOBECHECKED
-				FlashStatus = FLASH_WaitForLastOperation(
-						(uint32_t) HAL_FLASH_TIMEOUT_VALUE);
+			/* Copy the snippet commands buffer. Always an even number. Note the string termination char might be skipped */
+			for (uint8_t j = 0; j < ((strlen(Snippets[index].CMD) + 1) / 4); j++) {
+				HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, currentAdd, *(uint64_t*) (Snippets[index].CMD + j * 4));
+				FlashStatus = FLASH_WaitForLastOperation((uint32_t) HAL_FLASH_TIMEOUT_VALUE);
 				if (FlashStatus != HAL_OK) {
 					return pFlash.ErrorCode;
 				} else {
@@ -271,21 +304,18 @@ uint8_t SaveToRO(void) {
 			}
 		}
 	}
-
+	/* Lock the FLASH control register access */
 	HAL_FLASH_Lock();
-
-	return result;
 }
 
-/* --- Clear array topology in SRAM and Flash RO --- 
- */
+/* Clear Array topology in SRAM and Flash RO */
 uint8_t ClearROtopology(void) {
-	// Clear the array 
-	memset(array, 0, sizeof(array));
+	/* Clear the Array */
+	memset(Array, 0, sizeof(Array));
 	N = 1;
 	myID = 0;
 
-	return SaveToRO();
+	return SaveTopologyToRO();
 }
 /*-----------------------------------------------------------*/
 
@@ -306,7 +336,7 @@ void remoteBootloaderUpdate(uint8_t src, uint8_t dst, uint8_t inport,
 		if (NumberOfHops(dst)== 1)
 		lastModule = myID;
 		else
-		lastModule = route[NumberOfHops(dst)-1]; /* previous module = route[Number of hops - 1] */
+		lastModule = Route[NumberOfHops(dst)-1]; /* previous module = route[Number of hops - 1] */
 	}
 
 	/* 2. If this is the source of the message, show status on the CLI */
@@ -338,26 +368,183 @@ void remoteBootloaderUpdate(uint8_t src, uint8_t dst, uint8_t inport,
 	StartScastDMAStream(inport, myID, myOutport, myID, BIDIRECTIONAL,
 			0xFFFFFFFF, 0xFFFFFFFF, false);
 }
+/***************************************************************************/
+/* Trigger ST factory bootloader update for a remote module */
+void RemoteBootloaderUpdate(uint8_t src, uint8_t dst, uint8_t inport, uint8_t outport) {
 
-/*-----------------------------------------------------------*/
+	uint8_t myOutport = 0, lastModule = 0;
+	int8_t *pcOutputString;
 
-/* --- Setup a port for remote ST factory bootloader update:
- - Set baudrate to 57600
- - Enable even parity
- - Set datasize to 9 bits
+	/* 1. Get Route to destination module */
+	myOutport = FindRoute(myID, dst);
+	if (outport && dst == myID) { /* This is a 'via port' update and I'm the last module */
+		myOutport = outport;
+		lastModule = myID;
+	} else if (outport == 0) { /* This is a remote update */
+		if (NumberOfHops(dst)== 1)
+		lastModule = myID;
+		else
+		lastModule = Route[NumberOfHops(dst)-1]; /* previous module = Route[Number of hops - 1] */
+	}
+
+	/* 2. If this is the source of the message, show status on the CLI */
+	if (src == myID) {
+		/* Obtain the address of the output buffer.  Note there is no mutual
+		 * exclusion on this buffer as it is assumed only one command console
+		 * interface will be used at any one time. */
+		pcOutputString = FreeRTOS_CLIGetOutputBuffer();
+
+		if (outport == 0)		// This is a remote module update
+			sprintf((char*) pcOutputString, pcRemoteBootloaderUpdateMessage, dst);
+		else
+			// This is a 'via port' remote update
+			sprintf((char*) pcOutputString, pcRemoteBootloaderUpdateViaPortMessage, dst, outport);
+
+		strcat((char*) pcOutputString, pcRemoteBootloaderUpdateWarningMessage);
+		writePxITMutex(inport, (char*) pcOutputString, strlen((char*) pcOutputString), cmd50ms);
+		Delay_ms(100);
+	}
+
+	/* 3. Setup my inport and outport for bootloader update */
+	SetupPortForRemoteBootloaderUpdate(inport);
+	SetupPortForRemoteBootloaderUpdate(myOutport);
+
+	/* 5. Build a DMA stream between my inport and outport */
+	StartScastDMAStream(inport, myID, myOutport, myID, BIDIRECTIONAL, 0xFFFFFFFF, 0xFFFFFFFF, false);
+}
+
+/***************************************************************************/
+/* Setup a port for remote ST factory bootloader update:
+ * Set baudrate to 57600
+ * Enable even parity
+ * Set datasize to 9 bits
  */
-void SetupPortForRemoteBootloaderUpdate(uint8_t port) {
-	UART_HandleTypeDef *huart = GetUart(port);
+void SetupPortForRemoteBootloaderUpdate(uint8_t port){
 
-	huart->Init.BaudRate = 57600;
+	UART_HandleTypeDef *huart =GetUart(port);
+	HAL_UART_DeInit(huart);
 	huart->Init.Parity = UART_PARITY_EVEN;
 	huart->Init.WordLength = UART_WORDLENGTH_9B;
 	HAL_UART_Init(huart);
 
 	/* The CLI port RXNE interrupt might be disabled so enable here again to be sure */
-	__HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(huart,UART_IT_RXNE);
+
+}
+/*-----------------------------------------------------------*/
+
+///* --- Setup a port for remote ST factory bootloader update:
+// - Set baudrate to 57600
+// - Enable even parity
+// - Set datasize to 9 bits
+// */
+//void SetupPortForRemoteBootloaderUpdate(uint8_t port) {
+//	UART_HandleTypeDef *huart = GetUart(port);
+//
+//	huart->Init.BaudRate = 57600;
+//	huart->Init.Parity = UART_PARITY_EVEN;
+//	huart->Init.WordLength = UART_WORDLENGTH_9B;
+//	HAL_UART_Init(huart);
+//
+//	/* The CLI port RXNE interrupt might be disabled so enable here again to be sure */
+//	__HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
+//}
+/***************************************************************************/
+/* Samples a module parameter value based on parameter index.
+ * paramIndex: Index of the parameter (1-based index).
+ * value: Pointer to store the sampled float value.
+ */
+Module_Status GetModuleParameter(uint8_t paramIndex, float *value) {
+	Module_Status status = BOS_OK;
+
+	switch (paramIndex) {
+
+	/* Invalid parameter index */
+	default:
+		status = BOS_ERR_WrongParam;
+		break;
+	}
+
+	return status;
 }
 
+/* enable stop mode regarding only UART1 , UART2 , and UART3 */
+BOS_Status EnableStopModebyUARTx(uint8_t port) {
+
+	UART_WakeUpTypeDef WakeUpSelection;
+	UART_HandleTypeDef *huart = GetUart(port);
+
+	if ((huart->Instance == USART1) || (huart->Instance == USART2) || (huart->Instance == USART3)) {
+
+		/* make sure that no UART transfer is on-going */
+		while (__HAL_UART_GET_FLAG(huart, USART_ISR_BUSY) == SET);
+
+		/* make sure that UART is ready to receive */
+		while (__HAL_UART_GET_FLAG(huart, USART_ISR_REACK) == RESET);
+
+		/* set the wake-up event:
+		 * specify wake-up on start-bit detection */
+		WakeUpSelection.WakeUpEvent = UART_WAKEUP_ON_STARTBIT;
+		HAL_UARTEx_StopModeWakeUpSourceConfig(huart, WakeUpSelection);
+
+		/* Enable the UART Wake UP from stop mode Interrupt */
+		__HAL_UART_ENABLE_IT(huart, UART_IT_WUF);
+
+		/* enable MCU wake-up by LPUART */
+		HAL_UARTEx_EnableStopMode(huart);
+
+		/* enter STOP mode */
+		HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+	} else
+		return BOS_ERROR;
+
+}
+
+/***************************************************************************/
+/* Enable standby mode regarding wake-up pins:
+ * WKUP1: PA0  pin
+ * WKUP4: PA2  pin
+ * WKUP6: PB5  pin
+ * WKUP2: PC13 pin
+ * NRST pin
+ *  */
+BOS_Status EnableStandbyModebyWakeupPinx(WakeupPins_t wakeupPins) {
+
+	/* Clear the WUF FLAG */
+	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WUF);
+
+	/* Enable the WAKEUP PIN */
+	switch (wakeupPins) {
+
+	case PA0_PIN:
+		HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1); /* PA0 */
+		break;
+
+	case PA2_PIN:
+		HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN4); /* PA2 */
+		break;
+
+	case PB5_PIN:
+		HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN6); /* PB5 */
+		break;
+
+	case PC13_PIN:
+		HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN2); /* PC13 */
+		break;
+
+	case NRST_PIN:
+		/* do no thing*/
+		break;
+	}
+
+	/* Enable SRAM content retention in Standby mode */
+	HAL_PWREx_EnableSRAMRetention();
+
+	/* Finally enter the standby mode */
+	HAL_PWR_EnterSTANDBYMode();
+
+	return BOS_OK;
+}
 /* --- H08R6 module initialization.
  */
 void Module_Peripheral_Init(void) {
@@ -374,19 +561,19 @@ void Module_Peripheral_Init(void) {
 
 
 	//Circulating DMA Channels ON All Module
-	for (int i = 1; i <= NumOfPorts; i++) {
+	for (int i = 1; i <= NUM_OF_PORTS; i++) {
 		if (GetUart(i) == &huart1) {
-			index_dma[i - 1] = &(DMA1_Channel1->CNDTR);
+			dmaIndex[i - 1] = &(DMA1_Channel1->CNDTR);
 		} else if (GetUart(i) == &huart2) {
-			index_dma[i - 1] = &(DMA1_Channel2->CNDTR);
+			dmaIndex[i - 1] = &(DMA1_Channel2->CNDTR);
 		} else if (GetUart(i) == &huart3) {
-			index_dma[i - 1] = &(DMA1_Channel3->CNDTR);
+			dmaIndex[i - 1] = &(DMA1_Channel3->CNDTR);
 		} else if (GetUart(i) == &huart4) {
-			index_dma[i - 1] = &(DMA1_Channel4->CNDTR);
+			dmaIndex[i - 1] = &(DMA1_Channel4->CNDTR);
 		} else if (GetUart(i) == &huart5) {
-			index_dma[i - 1] = &(DMA1_Channel5->CNDTR);
+			dmaIndex[i - 1] = &(DMA1_Channel5->CNDTR);
 		} else if (GetUart(i) == &huart6) {
-			index_dma[i - 1] = &(DMA1_Channel6->CNDTR);
+			dmaIndex[i - 1] = &(DMA1_Channel6->CNDTR);
 		}
 	}
 
@@ -515,14 +702,14 @@ static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleTo
 
 	// TODO: Check if CLI is enable or not
 	for(uint8_t chr =0; chr < MSG_RX_BUF_SIZE; chr++){
-		if(UARTRxBuf[PcPort - 1][chr] == '\r'){
-			UARTRxBuf[PcPort - 1][chr] =0;
+		if(UARTRxBuf[pcPort - 1][chr] == '\r'){
+			UARTRxBuf[pcPort - 1][chr] =0;
 		}
 	}
 	if(1 == StopeCliStreamFlag){
 		StopeCliStreamFlag =0;
 		static char *pcOKMessage =(int8_t* )"Stop stream !\n\r";
-		writePxITMutex(PcPort,pcOKMessage,strlen(pcOKMessage),10);
+		writePxITMutex(pcPort,pcOKMessage,strlen(pcOKMessage),10);
 		return status;
 	}
 	if(period > timeout)
@@ -535,7 +722,7 @@ static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleTo
 		pcOutputString =FreeRTOS_CLIGetOutputBuffer();
 		function((char* )pcOutputString,100);
 
-		writePxMutex(PcPort,(char* )pcOutputString,strlen((char* )pcOutputString),cmd500ms,HAL_MAX_DELAY);
+		writePxMutex(pcPort,(char* )pcOutputString,strlen((char* )pcOutputString),cmd500ms,HAL_MAX_DELAY);
 		if(PollingSleepCLISafe(period,Numofsamples) != H08R6_OK)
 			break;
 	}
@@ -598,8 +785,8 @@ static Module_Status PollingSleepCLISafe(uint32_t period,long Numofsamples){
 
 		// Look for ENTER key to stop the stream
 		for(uint8_t chr =1; chr < MSG_RX_BUF_SIZE; chr++){
-			if(UARTRxBuf[PcPort - 1][chr] == '\r'){
-				UARTRxBuf[PcPort - 1][chr] =0;
+			if(UARTRxBuf[pcPort - 1][chr] == '\r'){
+				UARTRxBuf[pcPort - 1][chr] =0;
 				StopeCliStreamFlag = 1;
 				return H08R6_ERR_TERMINATED;
 			}
@@ -652,14 +839,14 @@ Module_Status Exporttoport(uint8_t module, uint8_t port, All_Data function) {
 			writePxITMutex(port, (char*) &temp[0], 2 * sizeof(uint8_t), 10);
 		} else {
 			if (H08R6_OK == status)
-				messageParams[1] = BOS_OK;
+				MessageParams[1] = BOS_OK;
 			else
-				messageParams[1] = BOS_ERROR;
-			messageParams[0] = FMT_UINT16;
-			messageParams[2] = 1;
-			messageParams[3] =
+				MessageParams[1] = BOS_ERROR;
+			MessageParams[0] = FMT_UINT16;
+			MessageParams[2] = 1;
+			MessageParams[3] =
 					(uint8_t) ((*(uint32_t*) &average) >> 0);
-			messageParams[4] =
+			MessageParams[4] =
 					(uint8_t) ((*(uint32_t*) &average) >> 8);
 			SendMessageToModule(module, CODE_READ_RESPONSE,
 					2 * sizeof(uint8_t) + 3);
@@ -776,7 +963,7 @@ static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBuf
 
 	do {
 		if (!strncmp(pSensName, AvrCmdName, strlen(AvrCmdName))) {
-			Exportstreamtoterminal(PcPort,AVERAGE,1,500);
+			Exportstreamtoterminal(pcPort,AVERAGE,1,500);
 
 		}
 		else {
