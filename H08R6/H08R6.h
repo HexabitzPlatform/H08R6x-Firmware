@@ -120,24 +120,29 @@
 /* Module EEPROM Variables */
 // Module Addressing Space 500 - 599
 #define _EE_MODULE			500
-
+#define STREAM_MODE_TO_PORT      1
+#define STREAM_MODE_TO_TERMINAL  2
 /* Exported types ------------------------------------------------------------*/
-
+#define MIN_PERIOD_MS		     100
+#define MAX_TIMEOUT_MS		     0xFFFFFFF
 
 /* Module_Status Type Definition */
 typedef enum {
-	H08R6_OK =0,
-	H08R6_ERR_WrongMode,
-	H08R6_ERR_WrongParams,
+	H08R6_OK = 0,
+	H08R6_ERR_UNKNOWNMESSAGE,
+	H08R6_ERR_WRONGPARAMS,
 	H08R6_ERR_TERMINATED,
-	H08R6_ERR_UnknownMessage,
-	H08R6_ERROR =255
+	H08R6_ERR_BUSY,
+	H08R6_ERROR = 255
 } Module_Status;
 
 /* Export Module typedef structure */
 /* Choose the functionality of stream and sample APIs */
 typedef enum {
-	AVERAGE =0, ALL,
+	SAMPLE = 0,
+	AVERAGE,
+	MOTION,
+	NUM_OF_TARGET
 } All_Data;
 
 /* Indicator LED */
