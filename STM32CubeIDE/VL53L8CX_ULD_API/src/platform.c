@@ -139,13 +139,11 @@ uint8_t VL53L8CX_Reset_Sensor(VL53L8CX_Platform *p_platform)
 	ResetGPIOsPin(LPn_GPIO_Port, LPn_Pin);
 	ResetGPIOsPin(AVDD_EN_GPIO_Port, AVDD_EN_Pin);
 	ResetGPIOsPin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin);
-	_DELAY_MS(100);
-
+	Delay_ms_no_rtos(10);
 	SetGPIOsPin(LPn_GPIO_Port, LPn_Pin);
 	SetGPIOsPin(AVDD_EN_GPIO_Port, AVDD_EN_Pin);
 	SetGPIOsPin(CORE1_8_EN_GPIO_Port, CORE1_8_EN_Pin);
-	_DELAY_MS(100);
-
+	Delay_ms_no_rtos(10);
   
 	return 0;
 }
@@ -173,7 +171,7 @@ uint8_t VL53L8CX_WaitMs(
 		VL53L8CX_Platform *p_platform,
                uint32_t TimeMs)
 {
-	_DELAY_MS(100);
+	Delay_ms_no_rtos(10);
 
 	return 0;
 }
