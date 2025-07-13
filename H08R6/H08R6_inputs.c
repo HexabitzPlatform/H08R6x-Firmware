@@ -50,8 +50,8 @@ void buttonDblClickedCallback(uint8_t port);
 /* Private ADC function prototypes *****************************************/
 void MX_ADC_Init(void);
 void Error_Handler(void);
-uint8_t GetRank(uint8_t Port,char *side);
-uint32_t GetChannel(UART_HandleTypeDef *huart,char *side);
+uint8_t GetRank(uint8_t Port,ModuleLayer_t side);
+uint32_t GetChannel(UART_HandleTypeDef *huart,ModuleLayer_t side);
 
 /***************************************************************************/
 /* Private Functions *******************************************************/
@@ -124,31 +124,32 @@ void Error_Handler(void){
 
 /***************************************************************************/
 /*  Get the ADC_channel Number for a given UART */
-uint32_t GetChannel(UART_HandleTypeDef *huart,char *side){
+uint32_t GetChannel(UART_HandleTypeDef *huart,ModuleLayer_t side){
 
-	if(huart->Instance == ADC_CH1_USART && !strcmp(side,"top"))
+	if(huart->Instance == ADC_CH1_USART && side == TOP)
 		return ADC_CH1_CHANNEL;
-	else if(huart->Instance == ADC_CH2_USART && !strcmp(side,"bottom"))
+	else if(huart->Instance == ADC_CH2_USART && side == BOTTOM)
 		return ADC_CH2_CHANNEL;
-	else if(huart->Instance == ADC_CH3_USART && !strcmp(side,"top"))
+	else if(huart->Instance == ADC_CH3_USART && side == TOP)
 		return ADC_CH3_CHANNEL;
-	else if(huart->Instance == ADC_CH3_USART && !strcmp(side,"bottom"))
+	else if(huart->Instance == ADC_CH4_USART && side == BOTTOM)
 		return ADC_CH4_CHANNEL;
 }
 
 /***************************************************************************/
-uint8_t GetRank(uint8_t Port,char *side){
+uint8_t GetRank(uint8_t Port,ModuleLayer_t side){
 
-	if(Port == 2 && !strcmp(side,"top"))
+	if(Port == ADC34_PORT && side == TOP)
 		adcChannelRank =0;
-	else if(Port == 2 && !strcmp(side,"bottom"))
+	else if(Port == ADC34_PORT && side == BOTTOM)
 		adcChannelRank =1;
-	else if(Port == 3 && !strcmp(side,"top"))
+	else if(Port == ADC12_PORT && side == TOP)
 		adcChannelRank =2;
-	else if(Port == 3 && !strcmp(side,"bottom"))
+	else if(Port == ADC12_PORT && side == BOTTOM)
 		adcChannelRank =3;
 	return adcChannelRank;
 }
+
 
 /***************************************************************************/
 /* BOS Exported Functions **************************************************/
@@ -181,32 +182,18 @@ void CheckAttachedButtons(void){
 
 			/* 4. Determine button state based on port reading and button type */
 			switch(Button[i].Type){
-				case MOMENTARY_NO:
+				case SWITCH_NO:
 					if(connected == GPIO_PIN_SET)
 						state =CLOSED;
 					else if(connected == GPIO_PIN_RESET)
 						state =OPEN;
 					break;
 
-				case MOMENTARY_NC:
+				case SWITCH_NC:
 					if(connected == GPIO_PIN_SET)
 						state =CLOSED;
 					else if(connected == GPIO_PIN_RESET)
 						state =OPEN;
-					break;
-
-				case ONOFF_NO:
-					if(connected == GPIO_PIN_SET)
-						state =ON;
-					else if(connected == GPIO_PIN_RESET)
-						state =OFF;
-					break;
-
-				case ONOFF_NC:
-					if(connected == GPIO_PIN_SET)
-						state =OFF;
-					else if(connected == GPIO_PIN_RESET)
-						state =ON;
 					break;
 
 				default:
@@ -296,7 +283,6 @@ void CheckAttachedButtons(void){
 			switch(Button[i].State){
 				case RELEASED:
 					buttonReleasedCallback(i);
-					Button[i].State =NONE;
 					break;
 
 				case CLICKED:
@@ -505,6 +491,11 @@ BOS_Status SetButtonEvents(uint8_t port,ButtonState_e buttonState,uint8_t mode){
 	else if(mode == BUTTON_EVENT_MODE_CLEAR && !buttonState == DBL_CLICKED)
 		Button[port].Event &=~BUTTON_EVENT_DBL_CLICKED;
 
+	if(mode == BUTTON_EVENT_MODE_OR || (mode == BUTTON_EVENT_MODE_CLEAR && buttonState == RELEASED))
+		Button[port].Event |= BUTTON_EVENT_RELEASED;
+	else if(mode == BUTTON_EVENT_MODE_CLEAR && !buttonState == RELEASED)
+		Button[port].Event &=~BUTTON_EVENT_RELEASED;
+
 	/* Add to EEPROM */
 	res =EE_ReadVariable(_EE_BUTTON_BASE + 4 * (port - 1),&temp16);
 	if(!res)											// This variable exists
@@ -527,19 +518,23 @@ BOS_Status SetButtonEvents(uint8_t port,ButtonState_e buttonState,uint8_t mode){
 /* Exported Functions ******************************************************/
 /***************************************************************************/
 /* select port 2 & port 3 for the selected ADC regular channel to be converted */
-BOS_Status ADCSelectPort(uint8_t ADC_port){
+BOS_Status ADCSelectPort(uint8_t adcPort){
 	BOS_Status Status =BOS_OK;
 
-	if(ADC_port == ADC12_PORT || ADC_port == ADC34_PORT){
-		if(ADC_port == ADC12_PORT)
+	if(adcPort == ADC12_PORT || adcPort == ADC34_PORT){
+		if(adcPort == ADC12_PORT)
 			adcSelectFlag[0] =1;
 		else
 			adcSelectFlag[1] =1;
 
-		HAL_UART_DeInit(GetUart(ADC_port));
-		PortStatus[ADC_port] =CUSTOM;
+		HAL_UART_DeInit(GetUart(adcPort));
+		PortStatus[adcPort] =CUSTOM;
 		if(adcEnableFlag == 0)
+		{
 			MX_ADC_Init();
+			adcDeInitFlag = 0;
+		}
+
 	}
 	else
 		return Status =BOS_ERR_ADC_WRONG_PORT;
@@ -548,25 +543,34 @@ BOS_Status ADCSelectPort(uint8_t ADC_port){
 }
 
 /***************************************************************************/
-BOS_Status ReadADCChannel(uint8_t Port,char *side,float *ADC_Value){
+BOS_Status ReadADCChannel(uint8_t adcPort, ModuleLayer_t side,float *adcVoltage){
 	BOS_Status Status =BOS_OK;
+	uint8_t count = 0u;
+	uint32_t adcAverValue =0;
 
-	if(Port == ADC12_PORT || Port == ADC34_PORT){
+	if(adcPort == ADC12_PORT || adcPort == ADC34_PORT){
 		if(adcEnableFlag == 1){
 
 			/* Enable chosen channel to be read */
-			Channel =GetChannel(GetUart(Port),side);
-			adcChannelRank =GetRank(Port,side);
+			Channel =GetChannel(GetUart(adcPort),side);
+			adcChannelRank =GetRank(adcPort,side);
 
 			sConfig.Channel =Channel;
 			sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
 			sConfig.SamplingTime = ADC_SAMPLETIME_79CYCLES_5;
 			HAL_ADC_ConfigChannel(&hadc,&sConfig);
-
+			HAL_ADCEx_Calibration_Start(&hadc);
+			while (count < 10){
 			HAL_ADC_Start(&hadc);
 			HAL_ADC_PollForConversion(&hadc,100);
-			adcChannelValue[adcChannelRank] =HAL_ADC_GetValue(&hadc);
+			adcChannelValue[adcChannelRank] = HAL_ADC_GetValue(&hadc);
 			HAL_ADC_Stop(&hadc);
+			adcAverValue += adcChannelValue[adcChannelRank];
+			count++;
+			}
+
+			/* calculate the average of measured samples */
+			adcChannelValue[adcChannelRank] = adcAverValue / count;
 
 			/* Disable chosen channel */
 			sConfig.Channel =Channel;
@@ -575,7 +579,7 @@ BOS_Status ReadADCChannel(uint8_t Port,char *side,float *ADC_Value){
 			HAL_ADC_ConfigChannel(&hadc,&sConfig);
 
 		}
-		*ADC_Value =(float )(adcChannelValue[adcChannelRank] * 3.3 / 4095);
+		*adcVoltage =(float )(adcChannelValue[adcChannelRank] * 3300 / 4095);
 	}
 	else
 		return BOS_ERR_ADC_WRONG_PORT;
@@ -629,12 +633,12 @@ void ReadTempAndVref(float *temp,float *Vref){
 }
 
 /***************************************************************************/
-BOS_Status GetReadPercentage(uint8_t port,char *side,float *precentageValue){
+BOS_Status GetReadPercentage(uint8_t adcPort,ModuleLayer_t side,float *precentageadcVoltage){
 	BOS_Status Status =BOS_OK;
-	float ADC_Value =0.0f;
+	float adcVoltageValue =0.0f;
 
-	if(BOS_OK == ReadADCChannel(port,side,&ADC_Value))
-		*precentageValue =(ADC_Value * 100) / 3.3;
+	if(BOS_OK == ReadADCChannel(adcPort,side,&adcVoltageValue))
+		*precentageadcVoltage =(adcVoltageValue * 100) / 3300;
 	else
 		return BOS_ERR_ADC_WRONG_PORT;
 
@@ -642,13 +646,13 @@ BOS_Status GetReadPercentage(uint8_t port,char *side,float *precentageValue){
 }
 
 /***************************************************************************/
-BOS_Status ADCDeinitChannel(uint8_t port){
+BOS_Status ADCDeinitChannel(uint8_t adcPort){
 	BOS_Status Status =BOS_OK;
 
-	if(port == ADC12_PORT || port == ADC34_PORT){
+	if(adcPort == ADC12_PORT || adcPort == ADC34_PORT){
 		HAL_ADC_DeInit(&hadc);
-		HAL_UART_Init(GetUart(port));
-		PortStatus[port] =FREE;
+		HAL_UART_Init(GetUart(adcPort));
+		PortStatus[adcPort] =FREE;
 		adcEnableFlag =0;
 	}
 	else
