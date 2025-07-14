@@ -97,7 +97,7 @@
 #define	USART6_RX_PIN		GPIO_PIN_9
 #define	USART6_TX_PORT		GPIOB
 #define	USART6_RX_PORT		GPIOB
-#define	USART6_AF			GPIO_AF3_USART6
+#define	USART6_AF			GPIO_AF8_USART6
 
 /* Module-specific Definitions */
 
@@ -139,7 +139,7 @@ typedef enum {
 /* Export Module typedef structure */
 /* Choose the functionality of stream and sample APIs */
 typedef enum {
-	SAMPLE = 0,
+	DISTANCE = 0,
 	AVERAGE,
 	MOTION,
 	NUM_OF_TARGET
@@ -173,9 +173,13 @@ extern void ExecuteMonitor(void);
  |								  APIs							          |  																 	|
 /* -----------------------------------------------------------------------
  */
+Module_Status SampleDistance(int16_t *distance);
 Module_Status SampleDistanceAverage(int16_t *average);
-Module_Status SampletoPort(uint8_t module,uint8_t port,All_Data function);
-Module_Status StreamtoPort(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
+Module_Status MotionIndicator(int16_t *indicator);
+Module_Status NumberOfTargets(int16_t *numOfTargets);
+Module_Status SampleToPort(uint8_t module,uint8_t port,All_Data function);
+Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction);
+Module_Status StreamToPort(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToTerminal(uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToBuffer(int16_t *buffer,All_Data function, uint32_t Numofsamples, uint32_t timeout);
 
