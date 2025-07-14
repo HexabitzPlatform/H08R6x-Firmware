@@ -425,7 +425,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 		/* USART6 clock enable */
 		__HAL_RCC_USART6_CLK_ENABLE();
-		__HAL_RCC_GPIOA_CLK_ENABLE();
+		__HAL_RCC_GPIOB_CLK_ENABLE();
 
 		/* USART6 GPIO Configuration */
 		GPIO_InitStruct.Pin = USART6_TX_PIN;
@@ -603,21 +603,22 @@ UART_HandleTypeDef* GetUart(uint8_t port) {
 }
 
 /*-----------------------------------------------------------*/
-
-/* --- Swap UART pins ( NORMAL | REVERSED )--- 
- */
-void SwapUartPins(UART_HandleTypeDef *huart, uint8_t direction) {
-	if (huart != NULL) {
-		if (direction == REVERSED) {
-			ArrayPortsDir[myID - 1] |= (0x8000 >> (GetPort(huart) - 1)); /* Set bit to one */
+/* Swap UART pins ( NORMAL | REVERSED ) */
+void SwapUartPins(UART_HandleTypeDef *huart,uint8_t direction){
+	if(huart != NULL){
+		if(direction == REVERSED){
+			ArrayPortsDir[myID - 1] |=(0x8000 >> (GetPort(huart) - 1)); /* Set bit to one */
 			huart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
 			huart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE;
 			HAL_UART_Init(huart);
-		} else if (direction == NORMAL) {
-			ArrayPortsDir[myID - 1] &= (~(0x8000 >> (GetPort(huart) - 1))); /* Set bit to zero */
+			HAL_UARTEx_ReceiveToIdle_DMA(huart,(uint8_t* )&UARTRxBuf[GetPort(huart) - 1],MSG_RX_BUF_SIZE);
+		}
+		else if(direction == NORMAL){
+			ArrayPortsDir[myID - 1] &=(~(0x8000 >> (GetPort(huart) - 1))); /* Set bit to zero */
 			huart->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
 			huart->AdvancedInit.Swap = UART_ADVFEATURE_SWAP_DISABLE;
 			HAL_UART_Init(huart);
+			HAL_UARTEx_ReceiveToIdle_DMA(huart,(uint8_t* )&UARTRxBuf[GetPort(huart) - 1],MSG_RX_BUF_SIZE);
 		}
 	}
 }
