@@ -33,6 +33,7 @@ uint16_t adcValueTemp =0;
 uint16_t adcValueVref =0;
 float Percentage =0.0f;
 float Current =0.0f;
+uint8_t adcDeInitFlag;
 
 ADC_HandleTypeDef hadc;
 ADC_ChannelConfTypeDef sConfig ={0};
@@ -592,7 +593,10 @@ BOS_Status ReadADCChannel(uint8_t adcPort, ModuleLayer_t side,float *adcVoltage)
 void ReadTempAndVref(float *temp,float *Vref){
 
 	if(0 == adcEnableFlag)
+	{
 		MX_ADC_Init();
+		adcDeInitFlag = 0;
+	}
 
 	/* Enable internal temperature channel */
 	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
@@ -646,13 +650,21 @@ BOS_Status GetReadPercentage(uint8_t adcPort,ModuleLayer_t side,float *precentag
 }
 
 /***************************************************************************/
-BOS_Status ADCDeinitChannel(uint8_t adcPort){
+
+BOS_Status ADCDeinitChannel(uint8_t port){
 	BOS_Status Status =BOS_OK;
 
-	if(adcPort == ADC12_PORT || adcPort == ADC34_PORT){
-		HAL_ADC_DeInit(&hadc);
-		HAL_UART_Init(GetUart(adcPort));
-		PortStatus[adcPort] =FREE;
+	if(port == ADC12_PORT || port == ADC34_PORT){
+		if(adcDeInitFlag == 0)
+		{
+			HAL_ADC_DeInit(&hadc);
+			adcDeInitFlag = 1;
+		}
+
+		UART_HandleTypeDef* huart = GetUart(port);
+		HAL_UART_Init(huart);
+		PortStatus[port] =FREE;
+		DMA_MSG_RX_Setup(huart,UARTDMAHandler[port - 1]);
 		adcEnableFlag =0;
 	}
 	else

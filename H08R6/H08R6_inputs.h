@@ -18,20 +18,20 @@
 /* Port-ADC Definitions */
 #define ADC_CH1_PIN   		GPIO_PIN_2
 #define ADC_CH2_PIN   		GPIO_PIN_3
-#define ADC_CH3_PIN   		GPIO_PIN_0
-#define ADC_CH4_PIN   		GPIO_PIN_1
+#define ADC_CH3_PIN   		GPIO_PIN_10
+#define ADC_CH4_PIN   		GPIO_PIN_11
 #define ADC12_PORT  		P2
 #define ADC34_PORT			P3
 #define ADC12_GPIO_PORT  	GPIOA
-#define ADC34_GPIO_PORT		GPIOA
+#define ADC34_GPIO_PORT		GPIOB
 #define ADC_CH1_USART   	USART2
 #define ADC_CH2_USART   	USART2
 #define ADC_CH3_USART   	USART3
 #define ADC_CH4_USART   	USART3
 #define ADC_CH1_CHANNEL   	ADC_CHANNEL_2
 #define ADC_CH2_CHANNEL   	ADC_CHANNEL_3
-#define ADC_CH3_CHANNEL   	ADC_CHANNEL_0
-#define ADC_CH4_CHANNEL   	ADC_CHANNEL_1
+#define ADC_CH3_CHANNEL   	ADC_CHANNEL_11
+#define ADC_CH4_CHANNEL   	ADC_CHANNEL_15
 
 /* Constant Macros */
 #define VREF_CAL            ((uint16_t *)((uint32_t)0x1FFF75AA))

@@ -830,9 +830,9 @@ Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction)
 				return H08R6_ERROR; /* Return error if sampling fails */
 			}
 			/* Format accelerometer data into a string */
-			for(int sample = 1 ; sample <= 16 ; sample++)
+			for(int sample = 0 ; sample < 16 ; sample++)
 			{
-				snprintf(CString,50,"Distance[zone %d] : %d\r\n",sample, Distance[sample]);
+				snprintf(CString,50,"Distance[zone %d] : %d\r\n",sample+1, Distance[sample]);
 				/* Send the formatted string to the specified port */
 				writePxMutex(dstPort,(char* )CString,strlen((char* )CString),cmd500ms,HAL_MAX_DELAY);
 				_DELAY_MS(5);
@@ -861,9 +861,9 @@ Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction)
 				return H08R6_ERROR; /* Return error if sampling fails */
 			}
 			/* Format magnetometer data into a string */
-			for(int sample = 1 ; sample <= 16 ; sample++)
+			for(int sample = 0 ; sample < 16 ; sample++)
 			{
-				snprintf(CString,50,"Motion[zone %d] : %d\r\n",sample, Motion[sample]);
+				snprintf(CString,50,"Motion[zone %d] : %d\r\n",sample+1, Motion[sample]);
 				/* Send the formatted string to the specified port */
 				writePxMutex(dstPort,(char* )CString,strlen((char* )CString),cmd500ms,HAL_MAX_DELAY);
 				_DELAY_MS(5);
@@ -880,15 +880,13 @@ Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction)
 				return H08R6_ERROR; /* Return error if sampling fails */
 			}
 			/* Format temperature data into a string */
-			for(int sample = 1 ; sample <= 16 ; sample++)
+			for(int sample = 0 ; sample < 16 ; sample++)
 			{
-				snprintf(CString,50,"Num Of Target[zone %d] : %d\r\n",sample, NumOfTargets[sample]);
+				snprintf(CString,50,"Num Of Target[zone %d] : %d\r\n",sample+1, NumOfTargets[sample]);
 				/* Send the formatted string to the specified port */
 				writePxMutex(dstPort,(char* )CString,strlen((char* )CString),cmd500ms,HAL_MAX_DELAY);
 				_DELAY_MS(5);
 			}
-			/* Send the formatted string to the specified port */
-			writePxMutex(dstPort,(char* )CString,strlen((char* )CString),cmd500ms,HAL_MAX_DELAY);
 			break;
 
 		default:
