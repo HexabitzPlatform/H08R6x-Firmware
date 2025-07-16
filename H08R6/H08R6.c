@@ -1119,11 +1119,20 @@ static Module_Status StreamToBuf(int16_t *buffer,uint32_t Numofsamples,uint32_t 
 		/* Delay for the specified period */
 		vTaskDelay(pdMS_TO_TICKS(period));
 
-		for(int index = 0 ; index < 16 ; index++)
+		if(function == SampleDistanceAverageBuf)
 		{
-			buffer[StreamIndex] =sample[index];
+			buffer[StreamIndex] =sample[0];
 			StreamIndex++;
 		}
+		else
+		{
+			for(int index = 0 ; index < 16 ; index++)
+			{
+				buffer[StreamIndex] =sample[index];
+				StreamIndex++;
+			}
+		}
+
 		/* Check if streaming should be stopped */
 		if(stopstream){
 			status =H08R6_ERR_TERMINATED;
