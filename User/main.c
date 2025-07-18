@@ -8,8 +8,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"
 
-int16_t distance;
-
+int16_t distance[16],average,motion[16],numoftarget[16];
+uint8_t f;
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -37,8 +37,23 @@ void UserTask(void *argument) {
 
 	// put your code here, to run repeatedly.
 	while (1) {
+		if(f==1)
+		{
+			SampleDistance(distance);
+		}
+		if(f==2)
+		{
+			SampleDistanceAverage(&average);
 
-		SampleDistanceAverage(&distance);
+		}
+		if(f==3)
+		{
+			MotionIndicator(motion);
+		}
+		if(f==4)
+		{
+			NumberOfTargets(numoftarget);
+		}
 
 
 

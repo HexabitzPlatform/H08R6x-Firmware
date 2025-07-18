@@ -35,6 +35,11 @@ TaskHandle_t TOFTaskHandle = NULL;
 /* Private Variables *******************************************************/
 uint8_t flag;
 int16_t Average = 0, Distance[16] = {0}, Motion[16] = {0}, NumOfTargets[16] = {0};
+uint8_t tof;
+uint8_t streamFlag,endStreamFlag;
+uint8_t dstModule,dstPort;
+All_Data dataFunction;
+uint32_t numOfSamples,streamTimeout;
 /* Streaming variables *****************************************************/
 static bool stopstream = false;         /* Flag to indicate whether to stop streaming process */
 uint8_t PortModule = 0u;                /* Module ID for the destination port */
@@ -70,11 +75,6 @@ void Module_Peripheral_Init(void);
 void RegisterModuleCLICommands(void);
 
 /* Local Functions ********************************************************/
-Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunction);
-Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction);
-Module_Status StreamToPort(uint8_t dstModule,uint8_t dstPort,All_Data dataFunction,uint32_t numOfSamples,uint32_t streamTimeout);
-Module_Status StreamToTerminal(uint8_t dstPort,All_Data dataFunction,uint32_t numOfSamples,uint32_t streamTimeout);
-Module_Status StreamToBuffer(int16_t *buffer,All_Data function, uint32_t Numofsamples, uint32_t timeout);
 static Module_Status PollingSleepCLISafe(uint32_t period, long Numofsamples);
 static Module_Status StreamToCLI(uint32_t Numofsamples,uint32_t timeout,SampleToString function);
 static Module_Status StreamToBuf(int16_t *buffer,uint32_t Numofsamples,uint32_t timeout,SampleToBuffer function);
@@ -88,6 +88,7 @@ void SampleDistanceBuf(int16_t *buffer);
 void SampleDistanceAverageBuf(int16_t *buffer);
 void NumberOfTargetsBuf(int16_t *buffer);
 void MotionIndicatorBuf(int16_t *buffer);
+
 /* General Function ********************************************************************/
 Module_Status SampleDistance(int16_t *distance);
 Module_Status SampleDistanceAverage(int16_t *average);
@@ -658,11 +659,8 @@ static Module_Status PollingSleepCLISafe(uint32_t period, long Numofsamples) {
 	vTaskDelay(pdMS_TO_TICKS(lastDelayMS));
 	return H08R6_OK;
 }
-uint8_t tof;
-uint8_t streamFlag,endStreamFlag;
-uint8_t dstModule,dstPort;
-All_Data dataFunction;
-uint32_t numOfSamples,streamTimeout;
+
+/***************************************************************************/
 void TOF(void *argument) {
 
 	/* Infinite loop */
@@ -818,7 +816,6 @@ Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction)
 	int8_t *PcOutputString = NULL; /* Pointer to CLI output buffer */
 	uint32_t Period =0u; /* Calculated period for the operation */
 	char CString[100] ={0}; /* Buffer for formatted output string */
-//	int16_t * Distance, Average, * Motion, * NumOfTargets;
 
 	/* Process data based on the requested sensor function */
 	switch(dataFunction){

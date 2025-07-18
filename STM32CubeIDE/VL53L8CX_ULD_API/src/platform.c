@@ -171,7 +171,7 @@ uint8_t VL53L8CX_WaitMs(
 		VL53L8CX_Platform *p_platform,
                uint32_t TimeMs)
 {
-	Delay_ms_no_rtos(10);
+	Delay_ms_no_rtos(100);
 
 	return 0;
 }
