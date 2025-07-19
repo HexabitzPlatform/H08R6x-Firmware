@@ -661,6 +661,7 @@ static Module_Status PollingSleepCLISafe(uint32_t period, long Numofsamples) {
 }
 
 /***************************************************************************/
+/* TOF task */
 void TOF(void *argument) {
 
 	/* Infinite loop */
@@ -1141,32 +1142,32 @@ static Module_Status StreamToBuf(int16_t *buffer,uint32_t Numofsamples,uint32_t 
 }
 
 /***************************************************************************/
-/* Samples accelerometer data into a buffer.
- * buffer: Pointer to the buffer where accelerometer data will be stored.
+/* Samples distance data into buffer.
+ * buffer: Pointer to stored buffer.
  */
 void SampleDistanceBuf(int16_t *buffer){
 	SampleDistance(buffer);
 }
 
 /***************************************************************************/
-/* Samples gyroscope data into a buffer.
- * buffer: Pointer to the buffer where gyroscope data will be stored.
+/* Samples distance average data into buffer.
+ * buffer: Pointer to stored buffer.
  */
 void SampleDistanceAverageBuf(int16_t *buffer){
 	SampleDistanceAverage(buffer);
 }
 
 /***************************************************************************/
-/* Samples magnetometer data into a buffer.
- * buffer: Pointer to the buffer where magnetometer data will be stored.
+/* Samples motion data into buffer.
+ * buffer: Pointer to stored buffer.
  */
 void MotionIndicatorBuf(int16_t *buffer){
 	MotionIndicator(buffer);
 }
 
 /***************************************************************************/
-/* Samples temperature data into a buffer.
- * buffer: Pointer to the buffer where temperature data will be stored.
+/* Samples number of targets data into buffer.
+ * buffer: Pointer to stored buffer.
  */
 void NumberOfTargetsBuf(int16_t *buffer){
 	NumberOfTargets(buffer);
@@ -1174,6 +1175,7 @@ void NumberOfTargetsBuf(int16_t *buffer){
 
 
 /***************************************************************************/
+/* Samples distance into string to print it */
 void SampleDistanceToString(char *cstring, size_t maxLen) {
 	int16_t * Distance;
 
@@ -1186,6 +1188,7 @@ void SampleDistanceToString(char *cstring, size_t maxLen) {
 }
 
 /***************************************************************************/
+/* Samples distance average into string to print it */
 void SampleDistanceAverageToString(char *cstring, size_t maxLen) {
 	int16_t Average;
 
@@ -1195,6 +1198,7 @@ void SampleDistanceAverageToString(char *cstring, size_t maxLen) {
 }
 
 /***************************************************************************/
+/* Samples motion indicator into string to print it */
 void MotionIndicatorToString(char *cstring, size_t maxLen) {
 	int16_t * Indicator;
 
@@ -1207,6 +1211,7 @@ void MotionIndicatorToString(char *cstring, size_t maxLen) {
 }
 
 /***************************************************************************/
+/* Samples number of targets into string to print it */
 void NumberOfTargetsToString(char *cstring, size_t maxLen) {
 	int16_t * NumOfTargets;
 
@@ -1226,7 +1231,9 @@ void StopStream(void) {
 /***************************************************************************/
 /***************************** General Functions ***************************/
 /***************************************************************************/
-
+/* breif: Samples distance data into buffer.
+ * buffer: Pointer to stored buffer.
+ */
 Module_Status SampleDistance(int16_t *distance) {
 	Module_Status status = H08R6_OK;
 
@@ -1237,6 +1244,9 @@ Module_Status SampleDistance(int16_t *distance) {
 }
 
 /***************************************************************************/
+/* breif: Samples distance average data into buffer.
+ * buffer: Pointer to stored buffer.
+ */
 Module_Status SampleDistanceAverage(int16_t *average) {
 	Module_Status status = H08R6_OK;
 
@@ -1247,6 +1257,9 @@ Module_Status SampleDistanceAverage(int16_t *average) {
 }
 
 /***************************************************************************/
+/* breif: Samples motion indicator data into buffer.
+ * buffer: Pointer to stored buffer.
+ */
 Module_Status MotionIndicator(int16_t *indicator) {
 	Module_Status status = H08R6_OK;
 
@@ -1257,6 +1270,9 @@ Module_Status MotionIndicator(int16_t *indicator) {
 }
 
 /***************************************************************************/
+/* breif: Samples number of targets data into buffer.
+ * buffer: Pointer to stored buffer.
+ */
 Module_Status NumberOfTargets(int16_t *numOfTargets) {
 	Module_Status status = H08R6_OK;
 
