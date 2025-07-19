@@ -535,9 +535,11 @@ VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t *NofTargets) {
  * and minimum never be <400mm, Default used resolution is 4x4. for using this function make
  * sure that macro VL53L8CX_DISABLE_MOTION_INDICATOR is NOT enabled.
  * @param1: VL53L8CX_APIs_Indicator* Indicator:  Indicator array contains 1 in zone where motion is detected.
+ * @param2: uint16_t stress_motion:  if the motion value is less than stress then it will not be detected.
+ *  A typical movement gives a value between 100 and 500.
  * @return: (uint8_t) status : 0 if start is OK.
  */
-VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator) {
+VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator, uint16_t stress_motion) {
 	/* Create motion indicator with resolution 4x4 */
 	if (vl53l8cx_motion_indicator_init(&Dev, &motion_config,
 			VL53L8CX_RESOLUTION_4X4))
@@ -571,9 +573,13 @@ VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator) {
 	}
 
 	for (int i = 0; i < resolution; i++) {
-		if (Results.motion_indicator.motion[motion_config.map_id[i]] >= 44) {
+		if (Results.motion_indicator.motion[motion_config.map_id[i]] >= stress_motion) {
 			//printf("Motion detected in this area: %3d \n", i);
 			Indicator[i] = 1;
+		}
+		else
+		{
+			Indicator[i] = 0;
 		}
 	}
 	if (VL53L8CX_StopRanging())

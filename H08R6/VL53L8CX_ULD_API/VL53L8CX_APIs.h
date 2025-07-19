@@ -167,7 +167,7 @@ VL53L8CX_Status VL53L8CX_SampleDistance(int16_t* Distance);
 VL53L8CX_Status VL53L8CX_SampleDistanceAverage(int16_t* Distance_a);
 VL53L8CX_Status VL53L8CX_StreamDistance(int16_t* Distance_a, uint32_t Time_out);
 VL53L8CX_Status VL53L8CX_NumberofTargets(int16_t* NofTargets);
-VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t* Indicator);
+VL53L8CX_Status VL53L8CX_MotionIndicator(int16_t *Indicator, uint16_t stress_motion);
 VL53L8CX_Status VL53L8CX_SampleRangingAllData(VL53L8CX_APIs_ResultsData* Data);
 
 #endif /* VL53L8CX_APIs */
