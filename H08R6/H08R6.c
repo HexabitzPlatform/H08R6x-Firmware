@@ -1250,7 +1250,7 @@ Module_Status SampleDistanceAverage(int16_t *average) {
 Module_Status MotionIndicator(int16_t *indicator) {
 	Module_Status status = H08R6_OK;
 
-	if ((status = VL53L8CX_MotionIndicator(indicator)) != H08R6_OK)
+	if ((status = VL53L8CX_MotionIndicator(indicator , 100)) != H08R6_OK)
 		return status = H08R6_ERROR;
 
 	return status;
