@@ -367,7 +367,7 @@ void RemoteBootloaderUpdate(uint8_t src, uint8_t dst, uint8_t inport, uint8_t ou
 }
 
 /***************************************************************************/
-/* Setup a port for remote ST factory bootloader update:
+/* breif: Setup a port for remote ST factory bootloader update:
  * Enable even parity
  * Set datasize to 9 bits
  */
@@ -577,19 +577,19 @@ Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src,
 		uint32_t period =0, timeout =0;
 
 		switch(code){
-			case CODE_H08R7_SAMPLE_DISTANCE: {
+			case CODE_H08R6_SAMPLE_DISTANCE: {
 				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],DISTANCE);
 				break;
 			}
-			case CODE_H08R7_SAMPLE_DISTANCE_AVRG: {
+			case CODE_H08R6_SAMPLE_DISTANCE_AVRG: {
 				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],AVERAGE);
 				break;
 			}
-			case CODE_H08R7_MOTION_INDICATOR: {
+			case CODE_H08R6_MOTION_INDICATOR: {
 				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],MOTION);
 				break;
 			}
-			case CODE_H08R7_NUM_OF_TARGETS: {
+			case CODE_H08R6_NUM_OF_TARGETS: {
 				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],NUM_OF_TARGET);
 				break;
 			}
@@ -690,7 +690,7 @@ void TOF(void *argument) {
 }
 /***************************************************************************/
 /*
- * @brief: Samples data and exports it to a specified port.
+ * @brief: Sample sensor data to a specified port.
  * @param dstModule: The module number to export data from.
  * @param dstPort: The port number to export data to.
  * @param dataFunction: Function to sample data (e.g., HEIGHT, SPEED, UTC, POSITION).
@@ -721,8 +721,8 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunc
                 MessageParams[0] = FMT_INT16;                                    /* Data format: float */
                 MessageParams[1] = (H08R6_OK == Status) ? BOS_OK : BOS_ERROR;   /* Operation status */
                 MessageParams[2] = 16;                                           /* Number of elements (Height) */
-                MessageParams[3] = (uint8_t)(CODE_H08R7_SAMPLE_DISTANCE >> 0);      /* Command code LSB */
-                MessageParams[4] = (uint8_t)(CODE_H08R7_SAMPLE_DISTANCE >> 8);      /* Command code MSB */
+                MessageParams[3] = (uint8_t)(CODE_H08R6_SAMPLE_DISTANCE >> 0);      /* Command code LSB */
+                MessageParams[4] = (uint8_t)(CODE_H08R6_SAMPLE_DISTANCE >> 8);      /* Command code MSB */
                 memcpy(&MessageParams[5],Distance, sizeof(Distance));
 
                 SendMessageToModule(dstModule, CODE_READ_RESPONSE, sizeof(Distance) + 5);
@@ -745,8 +745,8 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunc
                 MessageParams[0] = FMT_INT16;                                    /* Data format: float */
                 MessageParams[1] = (H08R6_OK == Status) ? BOS_OK : BOS_ERROR;   /* Operation status */
                 MessageParams[2] = 1;                                           /* Number of elements (SpeedInch, SpeedKm) */
-                MessageParams[3] = (uint8_t)(CODE_H08R7_SAMPLE_DISTANCE_AVRG >> 0);       /* Command code LSB */
-                MessageParams[4] = (uint8_t)(CODE_H08R7_SAMPLE_DISTANCE_AVRG >> 8);       /* Command code MSB */
+                MessageParams[3] = (uint8_t)(CODE_H08R6_SAMPLE_DISTANCE_AVRG >> 0);       /* Command code LSB */
+                MessageParams[4] = (uint8_t)(CODE_H08R6_SAMPLE_DISTANCE_AVRG >> 8);       /* Command code MSB */
                 MessageParams[5] = (uint8_t)(*(uint32_t*)&Average);          /* SpeedInch byte 0 */
                 MessageParams[6] = (uint8_t)((*(uint32_t*)&Average) >> 8);   /* SpeedInch byte 1 */
 
@@ -767,8 +767,8 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunc
                 MessageParams[0] = FMT_INT16;                                    /* Data format: int32 */
                 MessageParams[1] = (H08R6_OK == Status) ? BOS_OK : BOS_ERROR;   /* Operation status */
                 MessageParams[2] = 16;                                           /* Number of elements (Hours, Minutes, Seconds) */
-                MessageParams[3] = (uint8_t)(CODE_H08R7_MOTION_INDICATOR >> 0);         /* Command code LSB */
-                MessageParams[4] = (uint8_t)(CODE_H08R7_MOTION_INDICATOR >> 8);         /* Command code MSB */
+                MessageParams[3] = (uint8_t)(CODE_H08R6_MOTION_INDICATOR >> 0);         /* Command code LSB */
+                MessageParams[4] = (uint8_t)(CODE_H08R6_MOTION_INDICATOR >> 8);         /* Command code MSB */
                 memcpy(&MessageParams[5],Motion, sizeof(Motion));
 
                 SendMessageToModule(dstModule, CODE_READ_RESPONSE, sizeof(Motion) + 5);
@@ -788,8 +788,8 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunc
                 MessageParams[0] = FMT_INT16;                                    /* Data format: float */
                 MessageParams[1] = (H08R6_OK == Status) ? BOS_OK : BOS_ERROR;   /* Operation status */
                 MessageParams[2] = 16;                                           /* Number of elements (LongDegree, LatDegree, LongIndicator, LatIndicator) */
-                MessageParams[3] = (uint8_t)(CODE_H08R7_NUM_OF_TARGETS >> 0);    /* Command code LSB */
-                MessageParams[4] = (uint8_t)(CODE_H08R7_NUM_OF_TARGETS >> 8);    /* Command code MSB */
+                MessageParams[3] = (uint8_t)(CODE_H08R6_NUM_OF_TARGETS >> 0);    /* Command code LSB */
+                MessageParams[4] = (uint8_t)(CODE_H08R6_NUM_OF_TARGETS >> 8);    /* Command code MSB */
                 memcpy(&MessageParams[5],NumOfTargets, sizeof(NumOfTargets));
 
                 SendMessageToModule(dstModule, CODE_READ_RESPONSE, sizeof(NumOfTargets) + 5);
@@ -807,7 +807,7 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunc
 }
 
 /***************************************************************************/
-/* Streams a single sensor data sample to the terminal.
+/* breif: Sample sensor data to terminal.
  * dstPort: Port number to stream data to.
  * dataFunction: Function to sample data (e.g., ACC, GYRO, MAG, TEMP).
  */
@@ -898,10 +898,10 @@ Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction)
 
 /***************************************************************************/
 /*
- * brief: Streams data to the specified port and module with a given number of samples.
- * param targetModule: The target module to which data will be streamed.
- * param portNumber: The port number on the module.
- * param portFunction: Type of data that will be streamed (ACC, GYRO, MAG, or TEMP).
+ * brief: Stream sensor data to specific port.
+ * param dstModule: The target module to which data will be streamed.
+ * param dstPort: The port number on the module.
+ * param dataFunction: Type of data that will be streamed (ACC, GYRO, MAG, or TEMP).
  * param numOfSamples: The number of samples to stream.
  * param streamTimeout: The interval (in milliseconds) between successive data transmissions.
  * retval: of type Module_Status indicating the success or failure of the operation.
@@ -945,8 +945,8 @@ Module_Status StreamToPort(uint8_t dstModule,uint8_t dstPort,All_Data dataFuncti
 
 /***************************************************************************/
 /*
- * brief: Streams data to the specified terminal port with a given number of samples.
- * param targetPort: The port number on the terminal.
+ * brief: Stream sensor data to terminal.
+ * param dstPort: The port number on the terminal.
  * param dataFunction: Type of data that will be streamed (ACC, GYRO, MAG, or TEMP).
  * param numOfSamples: The number of samples to stream.
  * param streamTimeout: The interval (in milliseconds) between successive data transmissions.
@@ -989,7 +989,7 @@ Module_Status StreamToTerminal(uint8_t dstPort,All_Data dataFunction,uint32_t nu
 
 /***************************************************************************/
 /*
- * @brief: Streams data to a buffer.
+ * @brief: Stream sensor data to buffer.
  * @param buffer: Pointer to the buffer where data will be stored.
  * @param function: Function to sample data (e.g., ACC, GYRO, MAG, TEMP).
  * @param Numofsamples: Number of samples to take.
@@ -1051,6 +1051,11 @@ void StreamTimeCallback(TimerHandle_t xTimerStream)
 }
 
 /***************************************************************************/
+/* breif: Stream sensor data to CLI.
+ * Numofsamples: Number of samples to take.
+ * timeout: Timeout period for the operation.
+ * function: Function pointer to the sampling function (e.g., SampleAccBuf, SampleGyroBuf).
+ */
 static Module_Status StreamToCLI(uint32_t Numofsamples, uint32_t timeout, SampleToString function) {
 	Module_Status status = H08R6_OK;
 	int8_t *pcOutputString = NULL;
@@ -1093,7 +1098,7 @@ static Module_Status StreamToCLI(uint32_t Numofsamples, uint32_t timeout, Sample
 }
 
 /***************************************************************************/
-/* Streams sensor data to a buffer.
+/* breif: Stream sensor data into buffer.
  * buffer: Pointer to the buffer where data will be stored.
  * Numofsamples: Number of samples to take.
  * timeout: Timeout period for the operation.
@@ -1142,7 +1147,7 @@ static Module_Status StreamToBuf(int16_t *buffer,uint32_t Numofsamples,uint32_t 
 }
 
 /***************************************************************************/
-/* Samples distance data into buffer.
+/* breif: Sample distance data into buffer.
  * buffer: Pointer to stored buffer.
  */
 void SampleDistanceBuf(int16_t *buffer){
@@ -1150,7 +1155,7 @@ void SampleDistanceBuf(int16_t *buffer){
 }
 
 /***************************************************************************/
-/* Samples distance average data into buffer.
+/* breif: Sample distance average data into buffer.
  * buffer: Pointer to stored buffer.
  */
 void SampleDistanceAverageBuf(int16_t *buffer){
@@ -1158,7 +1163,7 @@ void SampleDistanceAverageBuf(int16_t *buffer){
 }
 
 /***************************************************************************/
-/* Samples motion data into buffer.
+/* breif: Sample motion indicator into buffer.
  * buffer: Pointer to stored buffer.
  */
 void MotionIndicatorBuf(int16_t *buffer){
@@ -1166,7 +1171,7 @@ void MotionIndicatorBuf(int16_t *buffer){
 }
 
 /***************************************************************************/
-/* Samples number of targets data into buffer.
+/* breif: Sample number of targets data into buffer.
  * buffer: Pointer to stored buffer.
  */
 void NumberOfTargetsBuf(int16_t *buffer){
@@ -1175,7 +1180,10 @@ void NumberOfTargetsBuf(int16_t *buffer){
 
 
 /***************************************************************************/
-/* Samples distance into string to print it */
+/* breif: Sample distance into string to print it
+ * cstring : Pointer to string buffer.
+ * maxLen : size of buffer.
+ * */
 void SampleDistanceToString(char *cstring, size_t maxLen) {
 	int16_t * Distance;
 
@@ -1188,7 +1196,10 @@ void SampleDistanceToString(char *cstring, size_t maxLen) {
 }
 
 /***************************************************************************/
-/* Samples distance average into string to print it */
+/* breif: Sample distance average into string to print it
+ * cstring : Pointer to string buffer.
+ * maxLen : size of buffer.
+ * */
 void SampleDistanceAverageToString(char *cstring, size_t maxLen) {
 	int16_t Average;
 
@@ -1198,7 +1209,10 @@ void SampleDistanceAverageToString(char *cstring, size_t maxLen) {
 }
 
 /***************************************************************************/
-/* Samples motion indicator into string to print it */
+/* Samples motion indicator into string to print it
+* cstring : Pointer to string buffer.
+* maxLen : size of buffer.
+* */
 void MotionIndicatorToString(char *cstring, size_t maxLen) {
 	int16_t * Indicator;
 
@@ -1211,7 +1225,10 @@ void MotionIndicatorToString(char *cstring, size_t maxLen) {
 }
 
 /***************************************************************************/
-/* Samples number of targets into string to print it */
+/* Samples number of targets into string to print it
+* cstring : Pointer to string buffer.
+* maxLen : size of buffer.
+* */
 void NumberOfTargetsToString(char *cstring, size_t maxLen) {
 	int16_t * NumOfTargets;
 
@@ -1231,7 +1248,7 @@ void StopStream(void) {
 /***************************************************************************/
 /***************************** General Functions ***************************/
 /***************************************************************************/
-/* breif: Samples distance data into buffer.
+/* breif: Sample distance data into buffer.
  * buffer: Pointer to stored buffer.
  */
 Module_Status SampleDistance(int16_t *distance) {
@@ -1244,7 +1261,7 @@ Module_Status SampleDistance(int16_t *distance) {
 }
 
 /***************************************************************************/
-/* breif: Samples distance average data into buffer.
+/* breif: Sample distance average data into buffer.
  * buffer: Pointer to stored buffer.
  */
 Module_Status SampleDistanceAverage(int16_t *average) {
@@ -1257,7 +1274,7 @@ Module_Status SampleDistanceAverage(int16_t *average) {
 }
 
 /***************************************************************************/
-/* breif: Samples motion indicator data into buffer.
+/* breif: Sample motion indicator data into buffer.
  * buffer: Pointer to stored buffer.
  */
 Module_Status MotionIndicator(int16_t *indicator) {
@@ -1270,7 +1287,7 @@ Module_Status MotionIndicator(int16_t *indicator) {
 }
 
 /***************************************************************************/
-/* breif: Samples number of targets data into buffer.
+/* breif: Sample number of targets data into buffer.
  * buffer: Pointer to stored buffer.
  */
 Module_Status NumberOfTargets(int16_t *numOfTargets) {
@@ -1285,6 +1302,13 @@ Module_Status NumberOfTargets(int16_t *numOfTargets) {
 /***************************************************************************/
 /********************************* Commands ********************************/
 /***************************************************************************/
+/**
+ * @brief CLI command to send sample TOF data.
+ * @param pcWriteBuffer Buffer to store the command output.
+ * @param xWriteBufferLen Length of the write buffer.
+ * @param pcCommandString Command string with time and torque parameters.
+ * @retval portBASE_TYPE Returns pdFALSE to indicate command completion.
+ */
 static portBASE_TYPE SampleTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString)
 {
 	const char *const distanceCmdName = "distance";
@@ -1347,6 +1371,14 @@ static portBASE_TYPE SampleTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 	return pdFALSE;
 }
 
+/***************************************************************************/
+/**
+ * @brief CLI command to send stream TOF data.
+ * @param pcWriteBuffer: Buffer to store the command output.
+ * @param xWriteBufferLen: Length of the write buffer.
+ * @param pcCommandString: Command string with time and torque parameters.
+ * @retval portBASE_TYPE Returns pdFALSE to indicate command completion.
+ */
 static portBASE_TYPE StreamTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString)
 {
 	const char *const distanceCmdName = "distance";
@@ -1404,7 +1436,20 @@ static portBASE_TYPE StreamTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 
 	return pdFALSE;
 }
+
 /***************************************************************************/
+/**
+ * @brief stream command parser.
+ * @param pcCommandString: Buffer to store the command output.
+ * @param ppSensName: sensor function name.
+ * @param pSensNameLen: sensor function length.
+ * @param pPortOrCLI: cli or port.
+ * @param pNumOfSamples: number of samples.
+ * @param pTimeout: timout.
+ * @param pPort: port.
+ * @param pModule module.
+ * @retval portBASE_TYPE Returns pdFALSE to indicate command completion.
+ */
 static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSensName, portBASE_TYPE *pSensNameLen,
 														bool *pPortOrCLI, uint32_t *pNumOfSamples, uint32_t *pTimeout, uint8_t *pPort, uint8_t *pModule)
 {
