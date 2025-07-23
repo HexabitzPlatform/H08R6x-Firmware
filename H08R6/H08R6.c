@@ -88,6 +88,7 @@ void SampleDistanceBuf(int16_t *buffer);
 void SampleDistanceAverageBuf(int16_t *buffer);
 void NumberOfTargetsBuf(int16_t *buffer);
 void MotionIndicatorBuf(int16_t *buffer);
+Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction);
 
 /* General Function ********************************************************************/
 Module_Status SampleDistance(int16_t *distance);
@@ -99,22 +100,22 @@ Module_Status NummberOfTargets(int16_t *numOfTargets);
 static portBASE_TYPE SampleTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
 static portBASE_TYPE StreamTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
 
-static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSensName, portBASE_TYPE *pSensNameLen,bool *pPortOrCLI, uint32_t *pPeriod, uint32_t *pTimeout, uint8_t *pPort, uint8_t *pModule);
+static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSensName, portBASE_TYPE *pSensNameLen,uint32_t *pPeriod, uint32_t *pTimeout);
 
 void TOF(void *argument);
 /* CLI command structure ***************************************************/
 /* CLI command structure : sample */
 const CLI_Command_Definition_t SampleCommandDefinition = {
 	(const int8_t *) "sample",
-	(const int8_t *) "sample:\r\n Syntax: parameters : 1-[distance]/[average]/[motion]/[numoftargets] 2-[cli or port] 3-[port if param 2 is port] 4-[module if param 2 is port]..\r\n\r\n",
+	(const int8_t *) "sample:\r\n Syntax: parameters : 1-[distance]/[average]/[motion]/[numoftargets]\r\n\r\n",
 	SampleTOFCommand,
-	-1
+	1
 };
 
 /* CLI command structure : sample */
 const CLI_Command_Definition_t StreamCommandDefinition = {
 	(const int8_t *) "stream",
-	(const int8_t *) "stream:\r\n Syntax: parameters :  1-[distance]/[average]/[motion]/[numoftargets] 2-[number of samples] 3-[timeout in ms] 4-[cli or port] 5-[port if param 4 is port] 6-[module if param 4 is port].\r\n\r\n",
+	(const int8_t *) "stream:\r\n Syntax: parameters :  1-[distance]/[average]/[motion]/[numoftargets] 2-[number of samples] 3-[timeout in ms].\r\n\r\n",
 	StreamTOFCommand,
 	-1
 };
@@ -391,17 +392,27 @@ void SetupPortForRemoteBootloaderUpdate(uint8_t port){
  * value: Pointer to store the sampled float value.
  */
 Module_Status GetModuleParameter(uint8_t paramIndex, float *value) {
-	Module_Status status = BOS_OK;
+    Module_Status status = H08R6_OK;
+//    int16_t temp = 0;
 
-	switch (paramIndex) {
+    switch (paramIndex) {
+        /* Sample ToF Distance sensor */
+        case 1:
+        {
+//            status = SampleDistanceAverage(&temp);
+        	streamFlag = 5;
+        	while(streamFlag != 0);
+            *value = (float)Average;
+            break;
+        }
 
-	/* Invalid parameter index */
-	default:
-		status = BOS_ERR_WrongParam;
-		break;
-	}
+        /* Invalid parameter index */
+        default:
+            status = H08R6_ERR_WRONGPARAMS;
+            break;
+    }
 
-	return status;
+    return status;
 }
 
 /***************************************************************************/
@@ -577,22 +588,11 @@ Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src,
 		uint32_t period =0, timeout =0;
 
 		switch(code){
-			case CODE_H08R6_SAMPLE_DISTANCE: {
-				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],DISTANCE);
-				break;
-			}
 			case CODE_H08R6_SAMPLE_DISTANCE_AVRG: {
 				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],AVERAGE);
 				break;
 			}
-			case CODE_H08R6_MOTION_INDICATOR: {
-				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],MOTION);
-				break;
-			}
-			case CODE_H08R6_NUM_OF_TARGETS: {
-				SampleToPort(cMessage[port - 1][shift],cMessage[port - 1][1 + shift],NUM_OF_TARGET);
-				break;
-			}
+
 			default:
 				result =H08R6_ERR_UNKNOWNMESSAGE;
 				break;
@@ -683,6 +683,10 @@ void TOF(void *argument) {
 				 StreamToPort(dstModule, dstPort, dataFunction, numOfSamples, streamTimeout);
 				 streamFlag = 0;
 			}
+			else if(streamFlag == 5){
+				SampleDistanceAverage(&Average);
+				 streamFlag = 0;
+			}
 
 		}
 		taskYIELD();
@@ -747,8 +751,8 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort, All_Data dataFunc
                 MessageParams[2] = 1;                                           /* Number of elements (SpeedInch, SpeedKm) */
                 MessageParams[3] = (uint8_t)(CODE_H08R6_SAMPLE_DISTANCE_AVRG >> 0);       /* Command code LSB */
                 MessageParams[4] = (uint8_t)(CODE_H08R6_SAMPLE_DISTANCE_AVRG >> 8);       /* Command code MSB */
-                MessageParams[5] = (uint8_t)(*(uint32_t*)&Average);          /* SpeedInch byte 0 */
-                MessageParams[6] = (uint8_t)((*(uint32_t*)&Average) >> 8);   /* SpeedInch byte 1 */
+                MessageParams[5] = (uint8_t)(Average);          /* SpeedInch byte 0 */
+                MessageParams[6] = (uint8_t)(Average >> 8);   /* SpeedInch byte 1 */
 
                 SendMessageToModule(dstModule, CODE_READ_RESPONSE, 7 * sizeof(uint8_t));
             }
@@ -1248,7 +1252,7 @@ void StopStream(void) {
 /***************************************************************************/
 /***************************** General Functions ***************************/
 /***************************************************************************/
-/* breif: Sample distance data into buffer.
+/* breif: Sample distance data [mm] into buffer.
  * buffer: Pointer to stored buffer.
  */
 Module_Status SampleDistance(int16_t *distance) {
@@ -1261,7 +1265,7 @@ Module_Status SampleDistance(int16_t *distance) {
 }
 
 /***************************************************************************/
-/* breif: Sample distance average data into buffer.
+/* breif: Sample distance average data [mm] into buffer.
  * buffer: Pointer to stored buffer.
  */
 Module_Status SampleDistanceAverage(int16_t *average) {
@@ -1337,13 +1341,6 @@ static portBASE_TYPE SampleTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 		snprintf((char*) pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
 		return pdFALSE;
 	}
-	pPortCliStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 2, &portCliStrLen);
-	pPortStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 3, &portStrLen);
-	pModStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 4, &modStrLen);
-
-	portOrCLI = atoi(pPortCliStr);
-	port = atoi(pPortStr);
-	dstModule = atoi(pModStr);
 
 
 	if (!strncmp(pfuncName, distanceCmdName, strlen(distanceCmdName))) {
@@ -1359,13 +1356,8 @@ static portBASE_TYPE SampleTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 		return pdFALSE;
 	}
 
-	if (portOrCLI) {
-		dstPort = pcPort;
-		streamFlag = 1;
-	} else {
-		dstPort = port;
-		streamFlag = 2;
-	}
+	dstPort = pcPort;
+	streamFlag = 1;
 	while(streamFlag != 0);
 
 	return pdFALSE;
@@ -1399,15 +1391,11 @@ static portBASE_TYPE StreamTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 	// Make sure we return something
 	*pcWriteBuffer = '\0';
 
-	if (!StreamCommandParser(pcCommandString, &pSensName, &sensNameLen, &portOrCLI, &Numofsamples, &timeout, &port,
-			&module)) {
+	if (!StreamCommandParser(pcCommandString, &pSensName, &sensNameLen, &Numofsamples, &timeout)) {
 		snprintf((char*) pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
 		return pdFALSE;
 	}
 
-
-
-	dstModule = module;
 	numOfSamples = Numofsamples;
 	streamTimeout = timeout;
 
@@ -1423,14 +1411,8 @@ static portBASE_TYPE StreamTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
 		snprintf((char*) pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
 		return pdFALSE;
 	}
-
-	if (portOrCLI) {
-		dstPort = pcPort;
-		streamFlag = 3;
-	} else {
-		dstPort = port;
-		streamFlag = 4;
-	}
+	dstPort = pcPort;
+	streamFlag = 3;
 	while(endStreamFlag == 0);
 	endStreamFlag = 0;
 
@@ -1451,7 +1433,7 @@ static portBASE_TYPE StreamTOFCommand(int8_t *pcWriteBuffer, size_t xWriteBuffer
  * @retval portBASE_TYPE Returns pdFALSE to indicate command completion.
  */
 static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSensName, portBASE_TYPE *pSensNameLen,
-														bool *pPortOrCLI, uint32_t *pNumOfSamples, uint32_t *pTimeout, uint8_t *pPort, uint8_t *pModule)
+														uint32_t *pNumOfSamples, uint32_t *pTimeout)
 {
 	const char *pNumOfSamplesStr = NULL;
 	const char *pTimeoutMSStr = NULL;
@@ -1459,18 +1441,9 @@ static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSe
 	portBASE_TYPE numOfSamplesStrLen = 0;
 	portBASE_TYPE timeoutStrLen = 0;
 
-	const char *pPortCliStr = NULL;
-	const char *pPortStr = NULL;
-	const char *pModStr = NULL;
-
-	portBASE_TYPE portCliStrLen = 0;
-	portBASE_TYPE portStrLen = 0;
-	portBASE_TYPE modStrLen = 0;
-
 	*ppSensName = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 1, pSensNameLen);
 	pNumOfSamplesStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 2, &numOfSamplesStrLen);
 	pTimeoutMSStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 3, &timeoutStrLen);
-	pPortCliStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 4, &portCliStrLen);
 
 	// At least 3 Parameters are required!
 	if ((*ppSensName == NULL) || (pNumOfSamplesStr == NULL) || (pTimeoutMSStr == NULL))
@@ -1479,18 +1452,6 @@ static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSe
 	// TODO: Check if Period and Timeout are integers or not!
 	*pNumOfSamples = atoi(pNumOfSamplesStr);
 	*pTimeout = atoi(pTimeoutMSStr);
-	*pPortOrCLI = atoi(pPortCliStr);
-
-	pPortStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 5, &portStrLen);
-	pModStr = (const char *)FreeRTOS_CLIGetParameter(pcCommandString, 6, &modStrLen);
-
-	if ((pModStr == NULL) && (pPortStr == NULL))
-		return true;
-	if ((pModStr == NULL) || (pPortStr == NULL))	// If user has provided 4 Arguments.
-		return false;
-
-	*pPort = atoi(pPortStr);
-	*pModule = atoi(pModStr);
 
 	return true;
 }

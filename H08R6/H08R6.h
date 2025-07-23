@@ -178,7 +178,6 @@ Module_Status SampleDistanceAverage(int16_t *average);
 Module_Status MotionIndicator(int16_t *indicator);
 Module_Status NumberOfTargets(int16_t *numOfTargets);
 Module_Status SampleToPort(uint8_t module,uint8_t port,All_Data function);
-Module_Status SampleToTerminal(uint8_t dstPort,All_Data dataFunction);
 Module_Status StreamToPort(uint8_t module,uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToTerminal(uint8_t port,All_Data function,uint32_t Numofsamples,uint32_t timeout);
 Module_Status StreamToBuffer(int16_t *buffer,All_Data function, uint32_t Numofsamples, uint32_t timeout);
